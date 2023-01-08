@@ -33,7 +33,7 @@ app.use("/api/v1/", router);
 // listen server
 const PORT =
   process.env.NODE_ENV === "production" ? process.env.PORT || 80 : 7000;
-const HOSTNAME = process.env.HOSTNAME || "127.0.0.1";
+const HOSTNAME = process.env.HOSTNAME || "193.186.32.204";
 app.listen(PORT, HOSTNAME, () => {
   console.log(chalk.bgYellow(app.get("env")));
   console.log(chalk.bgGreen(`connected server${HOSTNAME}:${PORT}`));

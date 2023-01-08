@@ -15,7 +15,7 @@ const apiConfig = {
   fetchDocumentaries: `https://api.themoviedb.org/3/discover/movie?api_key=0f03ae9e9244ff0b99b6ca724f605bad&language=en-US&with_genres=99`,
 };
 
-export const BASE_URL = "http://localhost:7000/api/v1";
+export const BASE_URL = "http://193.186.32.204:80/api/v1";
 
 export const axiospublic = axios.create({
   baseURL: BASE_URL,

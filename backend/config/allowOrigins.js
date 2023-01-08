@@ -1,7 +1,7 @@
 export const allowOrigins=[
-    "http://localhost:7000",
+    "http://193.186.32.204:80",
+    "http://193.186.32.204:443",
+    "http://193.186.32.204:49150",
     "http://localhost:3001",
     "http://localhost:3000",
-    "http://localhost:3500",
-    "http://mywebsite.com",
 ]
