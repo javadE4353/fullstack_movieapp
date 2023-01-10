@@ -31,7 +31,6 @@ import {
   getAllmylist,
   removeMovieMylist,
 } from "../redux/actionCreator/actionCreateMylist";
-import apiConfig from "../axios/configApi";
 import { BsX } from "react-icons/bs";
 import useAxiosPrivate from "../hook/useAxiosPrivate";
 import Comments from "../subcomponents/Comments";
@@ -42,6 +41,7 @@ import {
 } from "../redux/actionCreator/actionCreateRatings";
 import getmovies, { updatemovie } from "../redux/actionCreator/actionMovie";
 import axios from "axios";
+import { BASE_URL } from "../axios/configApi";
 
 //interface
 const override: CSSProperties = {
@@ -119,23 +119,16 @@ function Modal() {
   //
   async function fetchMovie() {
     try {
-      const data = await axios.get(
-        `https://api.themoviedb.org/3/${
-          movie?.media_type === "tv" ? "tv" : "movie"
-        }/${movie?.movieid}?api_key=${
-          apiConfig.apiKey
-        }&language=en-US&append_to_response=videos`
-      );
-      console.log(data);
-      if (data.data?.videos) {
-        // console.log(data?.videos?.results);
-        const index = data?.data.videos.results.findIndex(
+      const data = await axiosPrivate.get(`${BASE_URL}/movies/movie?movieid=${movie?.movieid}&type=${movie?.media_type || "movie"}`);
+      console.log(data?.data?.data);
+      if (data.data?.data?.videos) {
+        const index = data?.data?.data?.videos.results.findIndex(
           (element: Element) => element.type === "Trailer"
         );
-        setTrailer(data?.data.videos?.results[index]?.key);
+        setTrailer(data?.data?.data.videos?.results[index]?.key);
       }
-      if (data.data?.genres) {
-        setGenres(data.data?.genres);
+      if (data.data?.data?.genres) {
+        setGenres(data.data?.data?.genres);
       }
       setLoadingMovie(false);
     } catch (error) {
@@ -183,9 +176,7 @@ function Modal() {
   }, [movie, rated]);
 
   const handlechakRatings = useCallback(() => {
-    console.log(stateRatings?.ratings)
     if (user?.userInfo?.id && stateRatings?.ratings?.length>=0) {
-      console.log(stateRatings?.ratings)
       const dublicate = stateRatings.ratings.find((item: Ratings) => {
         if (
           item.userId === user?.userInfo?.id &&
@@ -322,7 +313,7 @@ function Modal() {
   useEffect(() => {
    if(id){
     const m=allMovies?.filter(item=>item.id === Number(id))
-    if(m.length>0)setMovie(m[0])
+    if(m.length>0 && m)setMovie(m[0])
    }
   }, [id]);
   return (
@@ -380,7 +371,7 @@ function Modal() {
                 <div
                   className="w-full bg-cover bg-no-repeat bg-center absolute inset-y-0 h-full"
                   style={{
-                    backgroundImage: `url(https://image.tmdb.org/t/p/original/${movie?.poster_path})`,
+                    backgroundImage: `url(${movie?.poster_path})`,
                   }}
                 >
                    <div
@@ -389,7 +380,7 @@ function Modal() {
                    <div
                     className="w-full bg-contain bg-no-repeat bg-center h-full rounded py-4 px-4"
                     style={{
-                      backgroundImage: `url(https://image.tmdb.org/t/p/original/${movie?.poster_path})`,
+                      backgroundImage: `url(${movie?.poster_path})`,
                     }}
                   ></div>
                    </div>

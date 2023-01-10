@@ -22,17 +22,17 @@ export const ratingsController = new (class RatingsController {
     });
 
     if (getratings) {
-        const Rating = await db.Ratings.destroy({
-          where: { [Op.and]: [{ userId: userId }, { movietitle: movietitle }] },
-        });
-  
-       return responce({
-          res,
-          code: 200,
-          message: "ok",
-          data: Rating,
-        });
-      }
+      const Rating = await db.Ratings.destroy({
+        where: { [Op.and]: [{ userId: userId }, { movietitle: movietitle }] },
+      });
+
+      return responce({
+        res,
+        code: 200,
+        message: "ok",
+        data: Rating,
+      });
+    }
 
     if (getratings === null) {
       const Rating = await db.Ratings.create(req.body);
@@ -43,7 +43,6 @@ export const ratingsController = new (class RatingsController {
         data: Rating,
       });
     }
-
   }
 
   //get rating

@@ -18,9 +18,7 @@ import MuiModal from "@mui/material/Modal";
 import MoonLoader from "react-spinners/MoonLoader";
 import { Link, Outlet } from "react-router-dom";
 //
-import {
-  pageinationAtom,
-} from "../atoms/modalAtom";
+import { pageinationAtom } from "../atoms/modalAtom";
 import useAxiosPrivate from "../hook/useAxiosPrivate";
 import { deleteUser, getUsers } from "../redux/actionCreator/actionCreateUsers";
 import { Users, StateTypeAuth } from "../typeing";
@@ -33,15 +31,15 @@ import { filterRow } from "../data/filter";
 
 //interface
 
-interface Roles{
-  name:string
+interface Roles {
+  name: string;
 }
 
 interface FilterUserByRole {
-  roles:Roles[]
+  roles: Roles[];
   id: number;
-  username:string
-  roleuser:string
+  username: string;
+  roleuser: string;
 }
 const overrideupdate: CSSProperties = {
   borderColor: "#36d7b7",
@@ -94,10 +92,12 @@ const ViewTableUser = () => {
   const [filterow, setfilterRow] = useState<any>(3);
   const [filterUsersByRole, setfilterUsersByRole] = useState<any>();
   // toggle filter items
-  const [showFilterUsersByRole, setShowFilterUsersByRole] =useState<boolean>(false);
+  const [showFilterUsersByRole, setShowFilterUsersByRole] =
+    useState<boolean>(false);
   const [showFilterRow, setShowFilterRow] = useState<boolean>(false);
   // show sidebar filter ___ mobile
-  const [toggleSidebarFilterM, setToggleSidebarFilterM] =useState<boolean>(false);
+  const [toggleSidebarFilterM, setToggleSidebarFilterM] =
+    useState<boolean>(false);
   // state roleUsers
   const [UsersRole, setUsersByRole] = useState<FilterUserByRole[]>([]);
   //
@@ -147,9 +147,8 @@ const ViewTableUser = () => {
   };
   //
   useEffect(() => {
-    console.log(filterUsersByRole)
     if (!filterUsersByRole) handlePageintaion();
-       handleUserByRole();
+    handleUserByRole();
   }, [pageinationatom, filterUsersByRole, filterow]);
 
   // Get the collection of movies as numbers
@@ -158,7 +157,6 @@ const ViewTableUser = () => {
       const res = await axiosPrivate.get(`${BASE_URL}/users/count`);
       if (res && res.status == 200) {
         setUsersByRole(res.data?.data.roles);
-        console.log(res);
       }
     } catch (error) {}
   };
@@ -465,12 +463,10 @@ const ViewTableUser = () => {
                     <div className=" flex items-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
                       <img
                         className="w-10 h-10 rounded-full"
-                        src={
-                         `${ item?.image}`
-                        }
+                        src={`${item?.image}`}
                         alt=""
                       />
-                      <div className="pl-3">
+                      <div className="pl-3 overflow-hidden">
                         <div className="text-base font-semibold">
                           {item?.username}
                         </div>
@@ -478,7 +474,7 @@ const ViewTableUser = () => {
                       </div>
                     </div>
                   </th>
-                  <td className="border border-slate-300 py-4 px-6">
+                  <td className="border border-slate-300 py-4 px-6 overflow-hidden">
                     {item?.email}
                   </td>
                   <td className="border border-slate-300 py-4 px-6">
@@ -497,13 +493,17 @@ const ViewTableUser = () => {
                   <td className="border border-slate-300 py-4 px-6">
                     <div className="flex justfy-center items-center  rounded-sm">
                       <Link
-                        to={user?.userInfo?.id === item?.id?"":`update/${item.id}`}
+                        to={
+                          user?.userInfo?.id === item?.id
+                            ? ""
+                            : `update/${item.id}`
+                        }
                         className="text-black border border-red-100 hover:bg-white/[0.15] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-r-sm text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                       >
                         <HiPencil size={20} />
                       </Link>
                       <Link
-                        to={user?.userInfo?.id === item?.id?"":"update"}
+                        to={user?.userInfo?.id === item?.id ? "" : "update"}
                         className="text-black border border-red-100 hover:bg-white/[0.15] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                       >
                         <HiDocumentDuplicate size={20} />
@@ -535,7 +535,7 @@ const ViewTableUser = () => {
           </div>
         </div>
       </motion.div>
-      <Outlet/>
+      <Outlet />
     </>
   );
 };

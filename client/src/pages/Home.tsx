@@ -8,15 +8,11 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { Dispatch } from "redux";
 import MuiModal from "@mui/material/Modal";
-import { motion } from "framer-motion";
 import { BsX } from "react-icons/bs";
 import {
   Movies,
-  StateAccessToken,
   StateTypeAuth,
-  Userinfo,
 } from "../typeing";
-import ClipLoader from "react-spinners/ClipLoader";
 import { Outlet } from "react-router-dom";
 
 //
@@ -106,10 +102,11 @@ const Home: React.FC = () => {
     if(cat?.length>0)
     setCat(cat)
   },[categorys])
+
   //return
   return (
     <div
-      className="relative h-screen bg-gradient-to-b from-gray-900/10 to-[#010511] lg:h-[140vh] "
+      className="relative h-auto bg-gradient-to-b from-gray-900/10 to-[#010511] lg:h-auto overflow-hidden"
       // initial={{width:0}}
       // animate={{width:"100%"}}
       // exit={{x:window.innerWidth}}
@@ -132,7 +129,7 @@ const Home: React.FC = () => {
           <BsX className="text-red-400"/>
         </span>
       </div>
-      <main className="relative pl-4 pb-16 sm:pb-0 lg:space-y-24 lg:pl-16">
+      <main className="relative pl-4 lg:pl-16">
         <>
           <div className={`${toggle ? "block" : "hidden"}`}>
             <Sidebar />

@@ -7,7 +7,7 @@ export class Pay {
     try {
       
    
-    console.log(req.body)
+    // console.log(req.body)
     let data = {
       MerchantID: "6cded376-3063-11e9-a98e-005056a205be" ,
       Amount: req.body.amount ,
@@ -19,8 +19,8 @@ export class Pay {
       "https://api.zarinpal.com/pg/v4/payment/request.json",
       data
     );
-    console.log(response.data.data.authority)
-    console.log(response.data.data)
+    // console.log(response.data.data.authority)
+    // console.log(response.data.data)
     
     if (response.data.data.code == 100) {
       const trans=await db.Transaction.findOne({
@@ -58,7 +58,7 @@ export class Pay {
       res.send("");
     }
   } catch (error) {
-      console.log(error)
+      // console.log(error)
   }
   }
 
@@ -67,9 +67,8 @@ export class Pay {
       // if(req.query.Status  && req.query.Status !== "OK"){
       //   return res.send('تراکنش ناموفق');
       // }
-      console.log(req.query);
-      console.log("req.query______________________________________Authityor");
-      console.log( req.query.Authityor);
+      // console.log(req.query);
+      // console.log( req.query.Authityor);
 
       let payment = await db.Transaction.findOne({
         where: { resnumber: req.query.Authority },
@@ -86,21 +85,20 @@ export class Pay {
         params
       );
       //   if(response.data.data.code == 100){
-      console.log(response.data);
+      // console.log(response.data);
       if (response.data.Status != 100) {
         let payment1 = await db.Transaction.update(
           { status: true, payment: true },
           { where: { resnumber: req.query.Authority } }
         );
-        console.log(payment1 );
+        // console.log(payment1 );
         const order = await db.Subscription.update(
           { status: true,month:payment?.createdAt },
           {
             where: { id: payment.subscriptionId },
           }
         );
-          console.log("ordertrans___________________________________________________")     
-          console.log(order)     
+          // console.log(order)     
         return res.send("تراکنش موفق");
       } else {
         return res.send("تراکنش ناموفق");

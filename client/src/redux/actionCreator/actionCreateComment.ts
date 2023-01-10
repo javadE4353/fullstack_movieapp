@@ -114,16 +114,18 @@ type payloadDelete = {
 type DispatchTypeDelete = (args: payloadDelete) => payloadDelete;
 
 export const DeleteComment = (
- userid:number,
- movieid:number,
- movietitle:string,
- createdAt:string,
+  userid: number,
+  movieid: number,
+  movietitle: string,
+  createdAt: string,
   axiosPrivate: AxiosInstance
 ) => {
   return async (dispatch: DispatchTypeDelete) => {
     dispatch({ type: REQUESTCOMMENT });
     try {
-      const response = await axiosPrivate.delete(`${BASE_URL}/review?userid=${userid}&movieid=${movieid}&createdAt=${createdAt}`);
+      const response = await axiosPrivate.delete(
+        `${BASE_URL}/review?userid=${userid}&movieid=${movieid}&createdAt=${createdAt}`
+      );
       if (response?.status === 200) {
         const res = await axiosPrivate.get(
           `${BASE_URL}/review?movieid=${movieid}&movietitle=${movietitle}`

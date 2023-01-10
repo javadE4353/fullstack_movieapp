@@ -5,7 +5,7 @@ import { useState, CSSProperties } from "react";
 import axios from "axios";
 import MuiModal from "@mui/material/Modal";
 import { AnimatePresence, motion } from "framer-motion";
-import { HiMagnifyingGlass } from "react-icons/hi2";
+import { BsSearch } from "react-icons/bs";
 import { BASE_URL } from "../axios/configApi";
 import { Movies } from "../typeing";
 import { Link } from "react-router-dom";
@@ -59,7 +59,7 @@ const InputSearch = () => {
             className="p-2.5 ml-2  text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             onClick={() => setShowFilter(true)}
           >
-            <HiMagnifyingGlass size={25} className="text-white" />
+            <BsSearch size={20} className="text-white" />
           </button>
           <div className={`relative w-full transition-all`}>
             <MuiModal
@@ -109,7 +109,10 @@ const InputSearch = () => {
                               className="text-black"
                               onClick={() => handleShowMovie(item.id)}
                             >
-                              {item.title}
+                              <div className="flex gap-2 items-center ">
+                                <img className="w-4 h-4 rounded-sm sm:w-4 h-4 rounded-sm " src={`${item?.poster_path}`}/>
+                                <span>{item.title}</span>
+                              </div>
                             </Link>
                           </li>
                         ))}

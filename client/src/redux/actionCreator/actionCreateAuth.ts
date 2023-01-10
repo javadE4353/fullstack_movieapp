@@ -50,7 +50,6 @@ const login =
     } catch (error: any) {
       let errorMessage = null;
       if (!error?.response) {
-        console.log(error?.response?.status)
         errorMessage = "سرور پشتیبانی نمیشود";
       } else if (error?.response?.status === 400) {
         errorMessage = "رمز ورود اشتباه است";

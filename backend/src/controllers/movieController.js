@@ -22,11 +22,10 @@ export const movieController = new (class MovieController {
     // }
     const dataimg = {};
     if (req.file !== undefined && req.file !== null) {
-      dataimg.backdrop_path = req.file.path.replace(/\\/g, "/").substring(6);
-      req.body.backdrop_path = `http://localhost:7000/${dataimg.backdrop_path}`;
-      console.log("not null");
+      dataimg.poster_path = req.file.path.replace(/\\/g, "/").substring(6);
+      req.body.poster_path = `http://localhost:7000/${dataimg.poster_path}`;
     } else {
-      req.body.backdrop_path = null;
+      req.body.poster_path = null;
     }
     const data = {
       adult: Boolean(req.body?.adult),
@@ -73,30 +72,39 @@ export const movieController = new (class MovieController {
       });
     }
 
-    cat = JSON.parse(JSON.stringify(cat));
-    const newMovie = await db.Movies.create({
-      ...req.body,
-      adult: data.adult,
-      genre_ids: data.genre_ids,
-      popularity: data.popularity,
-      video: data.video,
-      vote_count: data.vote_count,
-      vote_average: data.vote_average,
-      username: user.toJSON().username,
-      roleuser: req.role,
-      userId: user.toJSON().id,
-    });
+    try {
+      cat = JSON.parse(JSON.stringify(cat));
+      const newMovie = await db.Movies.create({
+        ...req.body,
+        adult: data.adult,
+        genre_ids: data.genre_ids,
+        popularity: data.popularity,
+        video: data.video,
+        vote_count: data.vote_count,
+        vote_average: data.vote_average,
+        username: user.toJSON().username,
+        roleuser: req.role,
+        userId: user.toJSON().id,
+      });
 
-    await db.CategoryHasMovies.create({
-      categoryId: cat[0].id,
-      movieId: newMovie.toJSON().id,
-    });
-    return responce({
-      res,
-      code: 201,
-      message: "ok : inser movie",
-      data: newMovie,
-    });
+      await db.CategoryHasMovies.create({
+        categoryId: cat[0].id,
+        movieId: newMovie.toJSON().id,
+      });
+      return responce({
+        res,
+        code: 201,
+        message: "ok : inser movie",
+        data: newMovie,
+      });
+    } catch (error) {
+      console.log(error)
+      return responce({
+        res,
+        code: 500,
+        message: "Request Blocked",
+      });
+    }
   }
 
   async deleteMovie(req, res) {
@@ -106,7 +114,6 @@ export const movieController = new (class MovieController {
         const upMovie = await db.Movies.destroy({
           where: { id: Number(movieid) },
         });
-        console.log(upMovie);
         return responce({
           res,
           code: 200,
@@ -114,7 +121,6 @@ export const movieController = new (class MovieController {
           data: upMovie,
         });
       } catch (error) {
-        console.log(error);
         return responce({
           res,
           code: 400,
@@ -127,7 +133,6 @@ export const movieController = new (class MovieController {
   async getAllmovies(req, res) {
     try {
       const Movie = await db.Movies.findAll();
-      // console.log(Movie)
       return responce({
         res,
         code: 200,
@@ -146,7 +151,7 @@ export const movieController = new (class MovieController {
 
   async updateMovie(req, res) {
     const { userid, movieid, movietitle } = req.query;
-    if (!movieid ) {
+    if (!movieid) {
       return responce({
         res,
         code: 400,
@@ -171,6 +176,13 @@ export const movieController = new (class MovieController {
     }
     if (req.body?.genre_ids && movieid) {
       try {
+        const dataimg = {};
+        if (req.file !== undefined && req.file !== null) {
+          dataimg.poster_path = req.file.path.replace(/\\/g, "/").substring(6);
+          req.body.poster_path = `http://localhost:7000/${dataimg.poster_path}`;
+        } else {
+          req.body.poster_path = null;
+        }
         const data = {
           ...req.body,
           genre_ids: JSON.stringify([Number(req.body?.genre_ids)]),
@@ -178,6 +190,7 @@ export const movieController = new (class MovieController {
           userid: user.toJSON().id,
           roleuser: user.toJSON().roleuser,
         };
+    
         let cat = await db.Category.findAll({
           attributes: ["id"],
           where: { bits: Number(req.body?.genre_ids) },
@@ -207,7 +220,6 @@ export const movieController = new (class MovieController {
           // data: upMovie,
         });
       } catch (error) {
-        // console.log(error);
         return responce({
           res,
           code: 500,
@@ -215,6 +227,13 @@ export const movieController = new (class MovieController {
         });
       }
     } else {
+      const dataimg = {};
+      if (req.file !== undefined && req.file !== null) {
+        dataimg.poster_path = req.file.path.replace(/\\/g, "/").substring(6);
+        req.body.poster_path = `http://localhost:7000/${dataimg.poster_path}`;
+      } else {
+        req.body.poster_path = null;
+      }
       const data = {
         ...req.body,
         username: user.toJSON().username,
@@ -232,7 +251,6 @@ export const movieController = new (class MovieController {
           data: upMovie,
         });
       } catch (error) {
-        // console.log(error);
         return responce({
           res,
           code: 500,
@@ -260,7 +278,6 @@ export const movieController = new (class MovieController {
           user.push(element);
         });
       }
-      console.log(user);
       return responce({
         res,
         code: 200,
@@ -268,7 +285,6 @@ export const movieController = new (class MovieController {
         data: user,
       });
     } catch (error) {
-      console.log(error);
       return responce({
         res,
         code: 500,
@@ -298,10 +314,7 @@ export const movieController = new (class MovieController {
                   required: true,
                 },
               ],
-              order: [
-                ["id", "DESC"],
-                
-              ],
+              order: [["id", "DESC"]],
             },
             { page, pageSize }
           )
@@ -364,10 +377,7 @@ export const movieController = new (class MovieController {
                   required: true,
                 },
               ],
-              order: [
-                ["id", "DESC"],
-                
-              ],
+              order: [["id", "DESC"]],
             },
             { page, pageSize }
           )
@@ -420,10 +430,7 @@ export const movieController = new (class MovieController {
           paginate(
             {
               where: { username: username },
-              order: [
-                ["id", "DESC"],
-                
-              ],
+              order: [["id", "DESC"]],
             },
             { page, pageSize }
           )
@@ -476,10 +483,7 @@ export const movieController = new (class MovieController {
                   required: true,
                 },
               ],
-              order: [
-                ["id", "DESC"],
-                
-              ],
+              order: [["id", "DESC"]],
               row: true,
             },
             { page, pageSize }
@@ -514,7 +518,6 @@ export const movieController = new (class MovieController {
           data: { movies: movies, count: count.countMovies },
         });
       } catch (error) {
-        console.log(error);
         return responce({
           res,
           code: 500,
@@ -536,10 +539,7 @@ export const movieController = new (class MovieController {
           paginate(
             {
               include: [{ model: db.Category }],
-              order: [
-                ["id", "DESC"],
-                
-              ],
+              order: [["id", "DESC"]],
             },
             { page, pageSize }
           )
@@ -583,10 +583,7 @@ export const movieController = new (class MovieController {
           paginate(
             {
               include: [{ model: db.Category }],
-              order: [
-                ["id", "DESC"],
-                
-              ],
+              order: [["id", "DESC"]],
             },
             { page, pageSize }
           )
@@ -636,10 +633,7 @@ export const movieController = new (class MovieController {
                 },
               },
               include: [{ model: db.Category }],
-              order: [
-                ["id", "DESC"],
-                
-              ],
+              order: [["id", "DESC"]],
             },
             { page, pageSize }
           )
@@ -666,7 +660,6 @@ export const movieController = new (class MovieController {
           data: { movies: movies, count: count.countMovies },
         });
       } catch (error) {
-        console.log(error);
         return responce({
           res,
           code: 500,
@@ -683,10 +676,7 @@ export const movieController = new (class MovieController {
         attributes: [
           [sequelize.fn("COUNT", sequelize.col("id")), "countMovies"],
         ],
-        order: [
-          ["id", "DESC"],
-          
-        ],
+        order: [["id", "DESC"]],
         raw: true,
       });
       if (movies?.length < 1 && !count) {
@@ -704,7 +694,6 @@ export const movieController = new (class MovieController {
         data: { movies: movies, count: count.countMovies },
       });
     } catch (error) {
-      // console.log(error)
       responce({
         res,
         code: 500,
@@ -714,24 +703,19 @@ export const movieController = new (class MovieController {
     }
   }
 
-  async getMovieByUser(req, res) {};
+  async getMovieByUser(req, res) {}
   async FilterMovies(req, res) {
     if (req.query?.search) {
       try {
-        const movies = await db.Movies.findAll(
-            {
-              where: {
-                title: {
-                  [Op.substring]: req.query.search,
-                },
-              },
-              include: [{ model: db.Category }],
-              order: [
-                ["id", "DESC"],
-                
-              ],
-            },          
-        );
+        const movies = await db.Movies.findAll({
+          where: {
+            title: {
+              [Op.substring]: req.query.search,
+            },
+          },
+          include: [{ model: db.Category }],
+          order: [["id", "DESC"]],
+        });
         if (!movies) {
           return responce({
             res,
@@ -743,10 +727,9 @@ export const movieController = new (class MovieController {
           res,
           code: 200,
           message: "success",
-          data:movies,
+          data: movies,
         });
       } catch (error) {
-        console.log(error);
         return responce({
           res,
           code: 500,
@@ -755,6 +738,5 @@ export const movieController = new (class MovieController {
         });
       }
     }
-
   }
 })();

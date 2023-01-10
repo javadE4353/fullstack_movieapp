@@ -66,7 +66,7 @@ const SidebarDashboard = () => {
                 <div>
                   <h2 className="text-gray-400">خوش آمدید</h2>
                 </div>
-                <div>
+                <div className="overflow-hidden">
                   <h2
                     style={{
                       transitionDelay: `${menus?.length + 1}00ms`,

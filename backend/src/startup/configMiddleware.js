@@ -7,5 +7,5 @@ const __dirname = dirname(__filename);
 export const configMiddleware=(express,app)=>{
     app.use(express.json());
     app.use(express.urlencoded({extended:true}))
-    app.use(express.static(path.join(__dirname+"public")))
+    app.use(express.static(path.join("public")))
 }

@@ -87,7 +87,6 @@ const getCategorys = (axiosPrivate:AxiosInstance,option:Option) => {
           ErrorMassege: null,
         },
       });
-      console.log(response)
     } catch (error) {
       let ErrorMsg = "error";
       dispatch({
@@ -169,7 +168,7 @@ export const updateCategory = (axiosPrivate:AxiosInstance,data:FormData,userid:n
     dispatch({ type: REQUESCATEGORY ,payload:{update:102,ErrorMassege:null}});
     try {
       const response = await axiosPrivate.put(`${BASE_URL}/category?userid=${userid}&bits=${bits}`,data);
-      if(response?.status === 20){
+      if(response?.status === 200){
         dispatch({
           type: UPDATECATEGORY,
           payload: {
@@ -262,7 +261,6 @@ export const getPublicCategory = () => {
           },
         });
       }
-      console.log(response)
     } catch (error) {
       let ErrorMsg = "error";
       dispatch({

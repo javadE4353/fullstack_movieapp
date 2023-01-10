@@ -4,11 +4,10 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Dispatch } from "redux";
 import { HiMenuAlt3 } from "react-icons/hi";
-import { BsX } from "react-icons/bs";
+import { BsX,BsDoorClosed } from "react-icons/bs";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  HiOutlineArrowRightOnRectangle,
   HiOutlineUserCircle,
 } from "react-icons/hi2";
 
@@ -138,7 +137,7 @@ const Sidebar = () => {
                 onClick={hanlerLogout}
               >
                 <div>
-                  {React.createElement(HiOutlineArrowRightOnRectangle, {
+                  {React.createElement(BsDoorClosed, {
                     size: "20",
                   })}
                 </div>

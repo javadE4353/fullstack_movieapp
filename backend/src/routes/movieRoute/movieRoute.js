@@ -7,17 +7,18 @@ import upload from "../../middleware/uploadFile.js";
 import { movieController } from "../../controllers/movieController.js";
 import { validate } from "./validate.js";
 import { verifyAdmin } from "../../middleware/verifyAdmin.js";
+import { fatchMovies } from "../../controllers/showMovie.js";
 
 const movieRouter = express.Router();
 
 movieRouter.post(
   "/",
-  upload.single("backdrop_path"),
+  upload.single("poster_path"),
   (req, res, next) => {
     if (!req.file) {
-      req.body.image = null;
+      req.body.poster_path = null;
     } else {
-      req.body.image = req.file.filename;
+      req.body.poster_path = req.file.filename;
     }
     next();
   },
@@ -29,12 +30,12 @@ movieRouter.post(
 );
 movieRouter.put(
   "/",
-  upload.single("image"),
+  upload.single("poster_path"),
   (req, res, next) => {
     if (!req.file) {
-      req.body.image = null;
+      req.body.poster_path = null;
     } else {
-      req.body.image = req.file.filename;
+      req.body.poster_path = req.file.filename;
     }
     next();
   },
@@ -52,6 +53,7 @@ movieRouter.delete(
 movieRouter.get("/allmovie", movieController.getAllmovies);
 movieRouter.get("/count", movieController.getCountMovie);
 movieRouter.get("/search", movieController.FilterMovies);
+movieRouter.get("/movie", verifyToken, verifyRoles(db.ROLES), fatchMovies);
 movieRouter.get(
   "/:userid",
   verifyToken,

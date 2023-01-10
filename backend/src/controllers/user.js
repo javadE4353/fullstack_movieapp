@@ -26,12 +26,11 @@ export const updateUser = async function (req, res) {
       code: 403,
     });
   }
-  
+
   const data = {};
   if (req.file !== undefined && req.file !== null) {
     data.image = req.file.path.replace(/\\/g, "/").substring(6);
     req.body.image = `http://localhost:7000/${data.image}`;
-    console.log("not null");
   } else {
     req.body.image = user.image;
   }
@@ -77,7 +76,7 @@ export const updateUser = async function (req, res) {
         res,
         message: "edited",
         code: 200,
-        data:updatedRows
+        data: updatedRows,
       });
     } catch (err) {
       return responce({
@@ -238,7 +237,6 @@ export const getCountUsersByRole = async function (req, res) {
       data: { roles, users },
     });
   } catch (error) {
-    console.log(error);
     return responce({
       res,
       code: 500,
@@ -286,7 +284,6 @@ export const getAllUser = async function (req, res) {
         data: [users, { count: count }],
       });
     } catch (err) {
-      console.log(err);
       responce({
         res,
         code: 500,
@@ -402,8 +399,6 @@ export const getAllUser = async function (req, res) {
     const page = req.query?.page ? Number(req.query.page) : 1;
     const pageSize = req.query?.pageSize ? Number(req.query.pageSize) : 1000;
     try {
-      console.log("user____________________________________4");
-      console.log("user____________________________________4");
       const users = await db.user.findAll(
         paginate(
           {
@@ -433,7 +428,6 @@ export const getAllUser = async function (req, res) {
         data: [users, { count: count }],
       });
     } catch (err) {
-      console.log(err);
       responce({
         res,
         code: 500,
@@ -443,10 +437,6 @@ export const getAllUser = async function (req, res) {
     }
   } else
     try {
-      console.log("user____________________________________5");
-      console.log("user____________________________________5");
-      console.log("user____________________________________5");
-
       const users = await db.user.findAll({
         include: [
           {
@@ -471,7 +461,6 @@ export const getAllUser = async function (req, res) {
         data: [users, { count: count }],
       });
     } catch (err) {
-      console.log(err);
       responce({
         res,
         code: 500,
@@ -490,7 +479,6 @@ export const getUserStats = async function (req, res) {
   const previousMonth = new Date(new Date().setMonth(lastMonth.getMonth() - 1));
   const lM = lastMonth.getMonth();
   const pM = previousMonth.getMonth();
-  console.log(pM);
   const pMonth = await db.user.findAll({
     attributes: [
       "id",
@@ -548,7 +536,6 @@ export const getUserStats = async function (req, res) {
   data.then((data) => {
     let response = JSON.parse(JSON.stringify(data));
     let count = (response[1].totalUser * 100) / response[0].totalUser - 100;
-    console.log(count);
     res.json({
       data: [{ countDifference: count }, ...data],
       message: "success",

@@ -4,13 +4,12 @@ import { useState } from "react";
 import { useRecoilState } from "recoil";
 import { FaPlay } from "react-icons/fa";
 import { HiOutlineInformationCircle } from "react-icons/hi";
-import { HiOutlineXMark } from "react-icons/hi2";
+import { BsX } from "react-icons/bs";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 //
 import { showAlert } from "../atoms/modalAtom";
-import baseUrl from "../axios/configApi";
 import { Movies, StateTypeAuth } from "../typeing";
 
 //interface
@@ -50,7 +49,7 @@ const SliderItemHome = ({ item }: Props) => {
           className="absolute top-0 bottom-0 left-0 px-4 py-3"
           onClick={() => setShowAlert(false)}
         >
-          <HiOutlineXMark size={25} />
+          <BsX size={25} />
         </span>
       </div>
 
@@ -58,13 +57,13 @@ const SliderItemHome = ({ item }: Props) => {
         <div className="absolute top-0 left-0 -z-10 h-[95vh] w-screen">
           {item ? (
             <img
-              src={`${baseUrl.originalImage}${ item?.poster_path}`}
+              src={`${ item?.poster_path}`}
               className="object-cover"
               alt=""
             />
           ) : (
             <img
-              src={`${baseUrl.originalImage}/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg`}
+              src={`/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg`}
               className="object-cover"
               alt=""
             />

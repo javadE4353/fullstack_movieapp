@@ -27,7 +27,7 @@ import { Users, StateTypeAuth, Movies } from "../typeing";
 import Pageination from "../subcomponents/Pagination";
 import { tableMovies } from "../data/dataTableMovies";
 import { Link, useNavigate } from "react-router-dom";
-import apiConfig, { axiospublic, BASE_URL } from "../axios/configApi";
+import  { axiospublic, BASE_URL } from "../axios/configApi";
 import getmovies, { deletemovie } from "../redux/actionCreator/actionMovie";
 import { filterRow } from "../data/filter";
 import getCategorys, { getPublicCategory } from "../redux/actionCreator/actionCreateCategory";
@@ -590,14 +590,10 @@ const TableMovies = () => {
                     <div className=" flex items-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
                       <img
                         className="w-10 h-10 rounded-full"
-                        src={
-                          item?.backdrop_path
-                            ? `${apiConfig?.originalImage}${item?.poster_path}`
-                            : "/docs/images/people/profile-picture-4.jpg"
-                        }
+                        src={`${item?.poster_path}`}
                         alt=""
                       />
-                      <div className="pl-3">
+                      <div className="pl-3 overflow-hidden">
                         <div className="text-base font-semibold">
                           {item?.title}
                         </div>
@@ -616,10 +612,10 @@ const TableMovies = () => {
                   <td className="border border-slate-300 py-4 px-6">
                     <div className="flex items-center">{item?.vote_count}</div>
                   </td>
-                  <td className="border border-slate-300 py-4 px-6">
+                  <td className="border border-slate-300 py-4 px-6 overflow-hidden">
                     <div className="flex items-center">{item?.username}</div>
                   </td>
-                  <td className="border border-slate-300 py-4 px-6">
+                  <td className="border border-slate-300 py-4 px-6 overflow-hidden">
                     <div className="flex items-center">
                       {item?.categories && item?.categories?.[0]?.title}
                     </div>

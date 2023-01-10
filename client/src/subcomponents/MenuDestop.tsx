@@ -118,7 +118,7 @@ const MenuDesktop: React.FC<Props> = ({ isScrolled }) => {
         </div>
       </div>
 
-      <div className="flex items-center space-x-4 text-sm font-light">
+      <div className="flex items-center  text-sm font-light">
         <div>
           <InputSearch />
         </div>
@@ -128,7 +128,7 @@ const MenuDesktop: React.FC<Props> = ({ isScrolled }) => {
             to={user?.role === "user" ? "create/account" : "/account"}
             className="text-white transiation ease-in-out hover:text-blue-700 duration-300"
           >
-            خرید اشتراک
+             اشتراک
           </Link>
         </div>
         <div className=" text-white lg:border border-white  hover:text-white  font-bold uppercase py-1 px-1 lg:px-4 lg:py-2 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">

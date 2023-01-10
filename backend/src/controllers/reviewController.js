@@ -67,7 +67,6 @@ export const reviewController = new (class ReviewController {
         data: comment,
       });
     } catch (error) {
-      console.log(error);
       responce({
         res,
         code: 500,
@@ -77,7 +76,7 @@ export const reviewController = new (class ReviewController {
   }
   // RemoveCommentByUser
   async removeCommentByUser(req, res) {
-    const { userid, movieid,createdAt } = req.query;
+    const { userid, movieid, createdAt } = req.query;
     if (!movieid || !userid) {
       responce({
         res,
@@ -87,7 +86,13 @@ export const reviewController = new (class ReviewController {
     }
     try {
       const comment = await db.Review.destroy({
-        where: { [Op.and]: [{ userId: userid }, { movieid: movieid },{createdAt:createdAt}] },
+        where: {
+          [Op.and]: [
+            { userId: userid },
+            { movieid: movieid },
+            { createdAt: createdAt },
+          ],
+        },
       });
       responce({
         res,

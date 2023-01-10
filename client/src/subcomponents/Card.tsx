@@ -40,7 +40,7 @@ const Card = ({ movie }: Props) => {
            <Link to={`movie/${loc.pathname.includes("mylist")?movie?.movieid:movie?.id}`}>
            <img
             className="w-full self-center rounded-lg h-[476px]"
-            src={"https://image.tmdb.org/t/p/original/" + movie?.poster_path}
+            src={`${movie?.poster_path}`}
             alt="poster"
           />
            </Link>

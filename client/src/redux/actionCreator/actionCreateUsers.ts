@@ -56,7 +56,6 @@ import { BASE_URL } from "../../axios/configApi";
     ) {
       baseUrl = `${url}`;
     }
-    console.log(baseUrl)
     return async (dispatch:DispatchType) => {
       dispatch({ type: REQUESTUSER});
       try {

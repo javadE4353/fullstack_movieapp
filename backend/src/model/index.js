@@ -18,10 +18,9 @@ import { movies } from "./Movies.js";
 import { category } from "./category.js";
 import { categoryHasMovies } from "./categoryHasMovies.js";
 const require = createRequire(import.meta.url);
-const env = process.env.NODE_ENV || "development";
+const env = process.env.NODE_ENV || "production";
 
 const config = require("../../config/configDB.json")[env];
-
 const db = {};
 let sequelize;
 // config database
@@ -44,7 +43,7 @@ if (config.use_env_variable) {
     password: process.env.PASSWORD,
   });
   await connection.query(
-    `CREATE DATABASE IF NOT EXISTS \`${process.env.DATABASE}\`;`
+    `CREATE DATABASE IF NOT EXISTS \`${config.production?.database || process.env.DATABASE}\`;`
   );
   sequelize = new Sequelize(
     config.database,
@@ -88,10 +87,10 @@ db.Sequelize = Sequelize;
 sequelize
   .authenticate()
   .then(() => {
-    console.log("connected...!");
+    // console.log("connected...!");
   })
   .catch((err) => {
-    console.log("ERR" + err);
+    // console.log("ERR" + err);
   });
 
 db.ROLES = ["admin", "user"];

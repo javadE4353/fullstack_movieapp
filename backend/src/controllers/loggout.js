@@ -20,7 +20,6 @@ const handleLogout = async (req, res) => {
 
     jwt.verify(refreshToken,process.env.SECRET_KEY_REFRESH_TOKEN,async(err,decoded)=>{
      if (err) {
-      console.log(err)
         return res.status(403)
      }
      const username=decoded.username

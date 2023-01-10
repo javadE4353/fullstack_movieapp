@@ -83,12 +83,18 @@ interface Categorys {
     ErrorMassege: string | null;
   };
 }
+
+interface IsertComplateMovie{
+  movies:{insert:number}
+}
+
 const InsertMovie = () => {
   let [color, setColor] = useState("#ffffff");
   const categorys = useSelector(
     (state: Categorys) => state?.categorys?.categoryPublic
   );
   const user = useSelector((state: StateTypeAuth) => state?.auth);
+  const insert = useSelector((state: IsertComplateMovie) => state?.movies?.insert);
 
   const dispatch: Dispatch<any> = useDispatch();
   const [Errormsg, setErrormsg] = useState<string>("");
@@ -105,13 +111,13 @@ const InsertMovie = () => {
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const formData = new FormData();
     formData.append("adult", data.adult);
-    formData.append("backdrop_path", data.backdrop_path[0]);
+    // formData.append("backdrop_path", data.backdrop_path[0]);
     formData.append("genre_ids", data.genre_ids);
     formData.append("original_language", data.original_language);
     formData.append("original_title", data.original_title);
     formData.append("overview", data.overview);
     formData.append("popularity", data.popularity);
-    // formData.append("poster_path", data.poster_path[0]);
+    formData.append("poster_path", data.poster_path[0]);
     formData.append("release_date",startDate.toLocaleDateString());
     formData.append("title", data.title);
     formData.append("video", data.video);
@@ -128,6 +134,16 @@ const InsertMovie = () => {
   useEffect(() => {
     dispatch(getPublicCategory());
   }, []);
+
+//
+
+  useEffect(() => {
+    if(insert === 201){
+        window.history.back()
+    }
+  }, [insert]);
+console.log(insert)
+  //return
   return (
     <>
       <motion.div
@@ -143,7 +159,7 @@ const InsertMovie = () => {
             <div className="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
               <div className="flex justify-start m-1">
                 <Link
-                  to="/dashboard/addmovie/newcategory"
+                  to=""
                   className="block text-white bg-red-600 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
                 >
                   ایجاد دسته بندی
@@ -153,7 +169,7 @@ const InsertMovie = () => {
               <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="grid gap-4 mb-4 sm:grid-cols-2">
                   <div className="flex justify-between items-center">
-                    <div className="col-span-full">
+                    {/* <div className="col-span-full">
                       <label
                         className="block mb-2 text-sm font-medium text-black dark:text-black"
                         form="file_input"
@@ -165,13 +181,13 @@ const InsertMovie = () => {
                         type="file"
                         {...register("backdrop_path")}
                       />
-                    </div>
+                    </div> */}
                     <div className="col-span-full">
                       <label
                         className="block mb-2 text-sm font-medium text-black dark:text-black"
                         form="file_input"
                       >
-                        عکس کوچک
+                        تصویر 
                       </label>
                       <input
                         className="block p-2 w-full text-sm text-gray-900 border border-gray-300 rounded-sm cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"

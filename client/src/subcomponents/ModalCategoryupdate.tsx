@@ -104,7 +104,7 @@ const UpdateCategoryModal = () => {
     dispatch(updateCategory(axiosPrivate,formData,user?.userInfo?.id,Number(id)));
     }
   };
-  
+  console.log(categorys.update)
   // change state showmodal
   useEffect(() => {
     setShowModalInsertCategory(true)
@@ -126,12 +126,12 @@ const UpdateCategoryModal = () => {
         />
       </MuiModal>
       <MuiModal
-        open={categorys.update?true:false}
+        open={categorys.isloading?true:false}
         className="fixed !top-7 left-0 right-0 z-50 mx-auto w-full max-w-5xl overflow-hidden overflow-y-scroll rounded-md scrollbar-hide"
       >
         <MoonLoader
           color={"#36d7b7"}
-          loading={categorys.update?true:false}
+          loading={categorys.isloading?true:false}
           cssOverride={overrideupdate}
           size={50}
           aria-label="Loading Spinner"

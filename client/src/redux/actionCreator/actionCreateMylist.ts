@@ -66,7 +66,6 @@ export const getAllmylist = (
     dispatch({ type: REQUESTMYLIST });
     try {
       const response = await axiosPrivate.get(`${baseUrl}`);
-      console.log(response);
       dispatch({
         type: REQUESTSECCESSMYLIST,
         payload: {
@@ -80,7 +79,7 @@ export const getAllmylist = (
       // console.log(error)
       dispatch({
         type: REQUESTFAILDMYLIST,
-        payload: { mylist: null, count:0, delete: 0, insert: 0 },
+        payload: { mylist: null, count: 0, delete: 0, insert: 0 },
       });
     }
   };
@@ -110,7 +109,6 @@ export const insertmylist = (movie: Movies, axiosPrivate: AxiosInstance) => {
         payload: { insert: 201 },
       });
     } catch (error) {
-      console.log(error);
       dispatch({
         type: REQUESTFAILDMYLIST,
         payload: { insert: 0 },
@@ -123,7 +121,7 @@ export const insertmylist = (movie: Movies, axiosPrivate: AxiosInstance) => {
 interface PayloadDelete {
   mylist: Movies[] | null;
   delete: number;
-  count: number ;
+  count: number;
   insert: number;
 }
 
@@ -141,12 +139,11 @@ export const removeMovieMylist = (
   axiosPrivate: AxiosInstance,
   userid: number,
   movieid: number,
-  option:OptionDelete
+  option: OptionDelete
 ) => {
-
   let url = `${BASE_URL}/mylist`;
   let baseUrl = ``;
-    if (option?.page && option?.pageSize ) {
+  if (option?.page && option?.pageSize) {
     baseUrl = `${url}/${userid}/?page=${option?.page}&pageSize=${option.pageSize}`;
   } else if (
     Object.keys(option).length < 1 ||
@@ -166,12 +163,10 @@ export const removeMovieMylist = (
       // console.log(response);
       dispatch({
         type: REMOVEMYLIST,
-        payload: { mylist: null,count:0, delete: 200, insert: 0 },
+        payload: { mylist: null, count: 0, delete: 200, insert: 0 },
       });
       if (response?.status === 200) {
-        const response = await axiosPrivate.get(
-          `${baseUrl}`
-        );
+        const response = await axiosPrivate.get(`${baseUrl}`);
         dispatch({
           type: REQUESTSECCESSMYLIST,
           payload: {
@@ -186,7 +181,7 @@ export const removeMovieMylist = (
       // console.log(error);
       dispatch({
         type: REQUESTFAILDMYLIST,
-        payload: { mylist: null,count:0, delete: 0, insert: 0 },
+        payload: { mylist: null, count: 0, delete: 0, insert: 0 },
       });
     }
   };

@@ -21,8 +21,6 @@ export const getTransaction = async (req, res) => {
   }
 
   try {
-    console.log("trans userid ____________________________________________");
-    console.log(id);
     const trans = await db.Transaction.findAll({
       where: { userId: id },
     });

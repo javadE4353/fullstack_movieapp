@@ -23,16 +23,13 @@ import { pageinationAtom } from "../atoms/modalAtom";
 
 import useAxiosPrivate from "../hook/useAxiosPrivate";
 
-import { Users, StateTypeAuth, Movies } from "../typeing";
+import { StateTypeAuth, Movies } from "../typeing";
 import Pageination from "../subcomponents/Pagination";
 import { tableMovies } from "../data/dataTableMovies";
-import { Link, useNavigate } from "react-router-dom";
-import apiConfig, { axiospublic, BASE_URL } from "../axios/configApi";
-import getmovies, { deletemovie } from "../redux/actionCreator/actionMovie";
+import { useNavigate } from "react-router-dom";
+import  { BASE_URL } from "../axios/configApi";
 import { filterRow } from "../data/filter";
-import getCategorys, {
-  getPublicCategory,
-} from "../redux/actionCreator/actionCreateCategory";
+import { getPublicCategory } from "../redux/actionCreator/actionCreateCategory";
 import {
   getAllmylist,
   removeMovieMylist,
@@ -131,7 +128,6 @@ const TableMovieMylist = () => {
   //Filter control based on video creator
   const handleSearchMovie = (value: string) => {
     if (value && user?.userInfo) {
-      console.log(value);
       dispatch(getAllmylist(axiosPrivate, user.userInfo.id, { search: value }));
     }
   };
@@ -169,8 +165,6 @@ const TableMovieMylist = () => {
   //Delete the video.Based on ID and movie name
 
   const handleDeleteUser = (id: number) => {
-    console.log(id);
-    console.log(user?.userInfo?.id);
     if (user?.userInfo && id)
       dispatch(
         removeMovieMylist(axiosPrivate, user.userInfo.id, id, {
@@ -186,7 +180,6 @@ const TableMovieMylist = () => {
       const res = await axiosPrivate.get(`${BASE_URL}/mylist/count`);
       if (res && res.status == 200) {
         setfilterusrname(res.data?.data);
-        console.log(res);
       }
     } catch (error) {}
   };
@@ -500,12 +493,12 @@ const TableMovieMylist = () => {
                           className="w-10 h-10 rounded-full"
                           src={
                             item?.backdrop_path
-                              ? `${apiConfig?.originalImage}${item?.poster_path}`
+                              ? `${item?.poster_path}`
                               : "/docs/images/people/profile-picture-4.jpg"
                           }
                           alt=""
                         />
-                        <div className="pl-3">
+                        <div className="pl-3 overflow-hidden">
                           <div className="text-base font-semibold">
                             {item?.title}
                           </div>
@@ -526,10 +519,10 @@ const TableMovieMylist = () => {
                         {item?.vote_count}
                       </div>
                     </td>
-                    <td className="border border-slate-300 py-4 px-6">
+                    <td className="border border-slate-300 py-4 px-6 overflow-hidden">
                       <div className="flex items-center">{item?.username}</div>
                     </td>
-                    <td className="border border-slate-300 py-4 px-6">
+                    <td className="border border-slate-300 py-4 px-6 overflow-hidden">
                       <div className="flex items-center">
                         {item?.categoryTitle}
                       </div>

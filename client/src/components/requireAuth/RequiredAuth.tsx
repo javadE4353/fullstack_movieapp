@@ -31,13 +31,8 @@ const RequiredAuth = ({ allowedRoles }:Props) => {
     }
   }, []);
   useEffect(() => {
-      console.log(user)
   }, [user?.isLoading]);
- 
-  // if (newAccessToken?.errorMessage) {
-  //   // navigate("./login");
-  //   console.log(newAccessToken?.errorMessage)
-  // }
+
   return allowedRoles?.includes(user?.userInfo !== null?user?.userInfo.role:'') ? (
     <>
       <div className="">

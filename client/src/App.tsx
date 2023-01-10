@@ -7,12 +7,11 @@ import { motion } from "framer-motion";
 
 //
 import { getAllmovie } from "./redux/actionCreator/actionMovie";
-import baseUrl from "./axios/configApi";
 import newAccessTokenAction from "./redux/actionCreator/actionCreateAccessToken";
 import ConfigPages from "./configPages/ConfigPages";
-import { Movies, StateAccessToken } from "./typeing";
+import { Movies } from "./typeing";
 
-import getCategorys, { getPublicCategory } from "./redux/actionCreator/actionCreateCategory";
+import{ getPublicCategory } from "./redux/actionCreator/actionCreateCategory";
 interface MoviesType {
   movies: {
     Allmovie: Movies[] | null;
@@ -36,22 +35,6 @@ const App: React.FC = () => {
   return (
     <>
     <ConfigPages />
-      {/* {movie.length > 0 ? (
-        <ConfigPages />
-      ) : (
-        <motion.div
-          className="h-140 w-screen"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity:0 }}
-        >
-          <img
-            src={`${baseUrl.originalImage}/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg`}
-            className="object-cover h-auto w-full "
-            alt=""
-          />
-        </motion.div>
-      )} */}
     </>
   );
 };

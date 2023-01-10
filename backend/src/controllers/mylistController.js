@@ -202,7 +202,6 @@ export const mylistController = new (class MylistController {
     }
     if (req.query?.search) {
       try {
-        console.log(req.query.search);
         const page = req.query?.page ? Number(req.query.page) : 1;
         const pageSize = req.query?.pageSize ? Number(req.query.pageSize) : 100;
         const movies = await db.Mylist.findAll(
@@ -246,7 +245,6 @@ export const mylistController = new (class MylistController {
           data: { movies: movies, count: count.countMovies },
         });
       } catch (error) {
-        console.log(error);
         return responce({
           res,
           code: 500,

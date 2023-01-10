@@ -9,8 +9,5 @@ export const verifyAdmin=(req,res,next)=>{
             message:"You do not have access permission",
         })
     }
-    console.log("verify Role____________________________")
-    console.log(role)
-
     next()
 }

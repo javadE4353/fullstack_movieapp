@@ -1,19 +1,16 @@
 import db from "../model/index.js";
-import chalk from "chalk";
 import { createRequire } from "module";
 import * as dotenv from "dotenv";
-import { Console } from "console";
 import { Op } from "sequelize";
 import { responce } from "../util/configResponce.js";
 dotenv.config();
 const require = createRequire(import.meta.url);
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const handleRefreshToken = async (req, res) => {
   const cookies = req.cookies;
   if (!cookies?.jwt) {
-   return responce({
+    return responce({
       res,
       code: 400,
       message: "The cookie is not set in the url",
@@ -21,7 +18,6 @@ const handleRefreshToken = async (req, res) => {
   }
   const refreshToken = cookies.jwt;
   // res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
-
   const TokensRefresh = await db.Token.findOne({
     where: { name: refreshToken },
   });
@@ -45,16 +41,19 @@ const handleRefreshToken = async (req, res) => {
       process.env.SECRET_KEY_REFRESH_TOKEN,
       async (err, decoded) => {
         if (err) {
-          console.log(err);
-          return;
+          return responce({
+            res,
+            code: 403,
+            message: "The token has expired",
+          });
         }
 
         const hackedUser = await db.user.findOne({
           username: decoded.username,
         });
-      // const remove=  await db.Token.destroy({
-      //     where: { userId: hackedUser.toJSON().id },
-      //   });
+        // const remove=  await db.Token.destroy({
+        //     where: { userId: hackedUser.toJSON().id },
+        //   });
       }
     );
     return responce({
@@ -69,14 +68,14 @@ const handleRefreshToken = async (req, res) => {
     process.env.SECRET_KEY_REFRESH_TOKEN,
     async (err, decoded) => {
       if (err) {
-        console.log(err);
         return responce({
           res,
           code: 403,
           message: "The token has expired",
         });
       }
-      if (err || foundUser.toJSON().username !== decoded.username) return res.sendStatus(403);
+      if (err || foundUser.toJSON().username !== decoded.username)
+        return res.sendStatus(403);
       const roles = await db.RoleHasUser.findOne({
         where: { userId: foundUser.toJSON().id },
       });
@@ -106,7 +105,7 @@ const handleRefreshToken = async (req, res) => {
           [Op.and]: [{ name: refreshToken }, { userId: foundUser.toJSON().id }],
         },
       });
-       try {
+      try {
         await db.Token.create({
           userId: foundUser.toJSON().id,
           name: newRefreshToken,
@@ -115,7 +114,7 @@ const handleRefreshToken = async (req, res) => {
           httpOnly: true,
           secure: true,
           sameSite: "None",
-          maxAge: 24 * 60 * 60 * 1000
+          maxAge: 24 * 60 * 60 * 1000,
         });
         const userInfo = {
           role: newRole.toJSON().name,
@@ -128,27 +127,13 @@ const handleRefreshToken = async (req, res) => {
           message: "The token has been updated",
           data: { userInfo, accessToken },
         });
-       } catch (error) {
-        console.log(error)
-       }
-    //   res.cookie("jwt", newRefreshToken, {
-    //     httpOnly: true,
-    //     secure: true,
-    //     sameSite: "None",
-    //     maxAge: 24 * 60 * 60 * 1000
-    //   });
-    // req.newRefreshTokenRequest=newRefreshToken;
-    //   const userInfo = {
-    //     role: newRole.toJSON().name,
-    //     username: decoded.username,
-    //     id: decoded.id,
-    //   };
-    //   responce({
-    //     res,
-    //     code: 200,
-    //     message: "ok",
-    //     data: { userInfo, accessToken },
-    //   });
+      } catch (error) {
+        responce({
+          res,
+          code: 500,
+          message: "Request Blocked",
+        });
+      }
     }
   );
 };

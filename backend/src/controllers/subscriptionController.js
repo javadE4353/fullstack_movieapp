@@ -6,28 +6,22 @@ export const subscription = new (class Subscription {
   constructor() {}
 
   async insert(req, res) {
-    const {userid} = req.params;
+    const { userid } = req.params;
     const { username, mobile, email, account } = req.body;
-    console.log(req.body);
-    console.log(req.query.userId);
 
     if (!username) {
       return res.status(400).send("");
     }
-    console.log("body-----------------------------------------");
     const user = await db.user.findOne({
       where: { id: userid },
     });
-    console.log("user-----------------------------------------");
-    console.log(user);
+
     if (!user) {
       return res.status(400).send("");
     }
     const subscr = await db.Subscription.findOne({
       where: { username: username },
     });
-    console.log(subscr);
-    console.log("req.subscr-----------------------------------------");
 
     if (!subscr) {
       try {
@@ -65,16 +59,17 @@ export const subscription = new (class Subscription {
         },
         { where: { userid: userid } }
       );
-if(updateSubs){
-  const subscrib=await db.Subscription.findOne({where:{userid:userid}})
-  return responce({
-    res,
-    code: 200,
-    message: "ok",
-    data: subscrib,
-  });
-}
-
+      if (updateSubs) {
+        const subscrib = await db.Subscription.findOne({
+          where: { userid: userid },
+        });
+        return responce({
+          res,
+          code: 200,
+          message: "ok",
+          data: subscrib,
+        });
+      }
     } catch (error) {
       return responce({
         res,

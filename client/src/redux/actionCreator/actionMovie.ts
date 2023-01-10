@@ -7,7 +7,7 @@ import {
   REQUESTFAILMOVIES,
   REQUESTGETALLMOVIE,
 } from "../types/types";
-import apiConfig, { axiospublic, BASE_URL } from "../../axios/configApi";
+import { axiospublic, BASE_URL } from "../../axios/configApi";
 import { Movies } from "../../typeing";
 import { AxiosInstance } from "axios";
 
@@ -96,7 +96,6 @@ export const getmovies = (axiosPrivate: AxiosInstance, option: Option) => {
           ErrorMessage: null,
         },
       });
-      console.log(response?.data.data);
     } catch (error) {
       let ErrorMsg = "error";
       dispatch({
@@ -243,7 +242,7 @@ export const insertmovie = (
       );
       dispatch({
         type: REQUESTINSERTMOVIE,
-        payload: { insert: response?.data?.data[0], ErrorMessage: null },
+        payload: { insert:201, ErrorMessage: null },
       });
       // console.log(response?.data?.data)
     } catch (error) {
@@ -303,7 +302,6 @@ export const deletemovie = (
             },
           });
           // console.log(response?.data?.data);
-          // console.log(res?.data?.data);
         }
       }
       // console.log(response?.data?.data);
@@ -351,9 +349,8 @@ export const updatemovie = (
       );
       dispatch({
         type: REQUESTUPDATEMOVIES,
-        payload: { update: response?.data?.data[0], ErrorMessage: null },
+        payload: { update:200, ErrorMessage: null },
       });
-      console.log(response?.data?.data);
     } catch (error) {
       let ErrorMsg = "error";
       dispatch({

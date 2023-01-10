@@ -44,7 +44,7 @@ const newAccessTokenAction = (dispaTch:Dispatch) => async (dispatch: DispatchTyp
         type: LOGIN_FAIL,
         payload: {
           accessToken: null,
-          errorMessage: errorMsg,
+          errorMessage: "",
         },
       });
   }

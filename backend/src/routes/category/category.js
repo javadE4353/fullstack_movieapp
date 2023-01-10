@@ -21,14 +21,8 @@ cateRouter.post(
   verifyRoles(db.ROLES),
   categoryController.insertCategory
 );
-cateRouter.get(
-  "/count",
-  categoryController.getCountCategory
-  );
-cateRouter.get(
-    "/",
-    categoryController.getCategory
-  );
+cateRouter.get("/count", categoryController.getCountCategory);
+cateRouter.get("/", categoryController.getCategory);
 cateRouter.put(
   "/",
   upload.single("image"),

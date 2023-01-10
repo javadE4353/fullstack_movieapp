@@ -1,4 +1,4 @@
-import { HiOutlineUsers } from "react-icons/hi2";
+import { BsPeopleFill } from "react-icons/bs";
 import { FiFolder } from "react-icons/fi";
 import { MdOutlineDashboard } from "react-icons/md";
 import { IconType } from "react-icons/lib";
@@ -14,7 +14,7 @@ export const menuAdmin = [
   { name: "برترین ها", link: "/comady", icon: FiFolder },
   { name: "سریال", link: "/action", icon: FiFolder },
   { name: "لیست من", link: "/mylist", icon: FiFolder },
-  { name: "کاربران", link: "/dashboard/users", icon: HiOutlineUsers },
+  { name: "کاربران", link: "/dashboard/users", icon: BsPeopleFill },
 ];
 export const menuUser = [
   { name: "پنل کاربری", link: "/dashboard/me", icon: MdOutlineDashboard },

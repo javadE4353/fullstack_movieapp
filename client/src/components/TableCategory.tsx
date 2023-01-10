@@ -27,7 +27,7 @@ import useAxiosPrivate from "../hook/useAxiosPrivate";
 import { Users, StateTypeAuth, Movies } from "../typeing";
 import Pageination from "../subcomponents/Pagination";
 import { Link } from "react-router-dom";
-import apiConfig, { axiospublic, BASE_URL } from "../axios/configApi";
+import { axiospublic, BASE_URL } from "../axios/configApi";
 import { tableCategory } from "../data/dataTableCategory";
 import getCategorys, {
   deleteCatgory,
@@ -212,7 +212,6 @@ const TableCategory = () => {
 
   //delete category
   const deleteCategory = (bits: number) => {
-    console.log(bits)
     if (bits && user?.userInfo?.id)
       dispatch(deleteCatgory(axiosPrivate, bits, user?.userInfo?.id));
   };
@@ -223,7 +222,6 @@ const TableCategory = () => {
       if (res && res.status == 200) {
         setfilterusrname(res.data?.data.userCat);
         setCategoryArray(res.data?.data.category);
-        console.log(res)
       }
     } catch (error) {}
   };
@@ -243,6 +241,7 @@ const TableCategory = () => {
     setPageinationAtom(1)
   }, [toggleSidebarFilterM]);
 
+  //return
   return (
     <motion.div
     //    initial={{x: -window.innerWidth }}
@@ -602,12 +601,12 @@ const TableCategory = () => {
                         className="w-10 h-10 rounded-full"
                         src={
                           item?.image
-                            ? `${apiConfig?.originalImage}${item?.image}`
+                            ? `${item?.image}`
                             : "/docs/images/people/profile-picture-4.jpg"
                         }
                         alt=""
                       />
-                      <div className="pl-3">
+                      <div className="pl-3 overflow-hidden">
                         <div className="text-base font-semibold">
                           {item?.title}
                         </div>
@@ -618,14 +617,15 @@ const TableCategory = () => {
                   <td className="border border-slate-300 py-4 px-6">
                     <div className="flex items-center">{timeago.format(item?.createdAt)}</div>
                   </td>
-                  <td className="border border-slate-300 py-4 px-6">
+                  <td className="border border-slate-300 py-4 px-6 overflow-hidden">
                     <div className="flex items-center">{item?.content}</div>
                   </td>
                   <td className="border border-slate-300 py-4 px-6">
                     <div className="flex items-center">{item?.bits}</div>
                   </td>
-                  <td className="border border-slate-300 py-4 px-6">
-                    <div className="flex items-center">{item?.username}</div>
+                  <td className="border border-slate-300 py-4 px-6 overflow-hidden">
+                    <div className="flex items-center">
+                      {item?.username}</div>
                   </td>
                   <td className="border border-slate-300 py-4 px-6">
                     <div className="flex justfy-center items-center  rounded-sm">

@@ -1,6 +1,6 @@
 {
     "development": {
-        "username": "root",
+        "username": "javad43",
         "password": "43534353",
         "database": "movieApp",
         "host": "127.0.0.1",
@@ -13,7 +13,7 @@
         }
       },
       "test": {
-        "username": "root",
+        "username": "javad43",
         "password": "43534353",
         "database": "movieApp_test",
         "host": "127.0.0.1",
@@ -26,7 +26,7 @@
         }
       },
       "production": {
-        "username": "root",
+        "username": "javad43",
         "password": "43534353",
         "database": "movieApp_production",
         "host": "127.0.0.1",

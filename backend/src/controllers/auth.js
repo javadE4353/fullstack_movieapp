@@ -60,7 +60,7 @@ export const authController = new (class AuthController {
           username: username,
           mobile: mobile,
           email: email,
-          image: `http://localhost:4000/${data.img}`,
+          image: `http://localhost:7000/${data.img}`,
           password: password,
           roleuser: req.body.role ? req.body.role : null,
           role: [{}],
@@ -138,7 +138,6 @@ export const authController = new (class AuthController {
     fondUser = JSON.parse(JSON.stringify(fondUser));
     //match password
     const match = await bcrypt.compare(password, fondUser.password);
-    // console.log(match)
     if (!match) {
       return responce({
         res,
@@ -191,28 +190,36 @@ export const authController = new (class AuthController {
         secure: true,
       });
     }
-
-    const token = await db.Token.create({
-      name: refreshToken,
-      userId: fondUser.id,
-    });
-    // set refreshcookie in cookie client
-    res.cookie("jwt", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      samsite: "none",
-      maxAge: 24 * 60 * 60 * 1000,
-    });
-    const userInfo = {
-      role: fondUser?.roles?.[0]?.name,
-      username: fondUser.username,
-      id: fondUser.id,
-    };
-    responce({
-      res,
-      message: `verify${fondUser.username}`,
-      code: 200,
-      data: { userInfo, accessToken },
-    });
+try {
+  const token = await db.Token.create({
+    name: refreshToken,
+    userId: fondUser.id,
+  });
+  // set refreshcookie in cookie client
+  res.cookie("jwt", refreshToken, {
+    httpOnly: true,
+    secure: true,
+    samsite: "none",
+    maxAge: 24 * 60 * 60 * 1000,
+  });
+  const userInfo = {
+    role: fondUser?.roles?.[0]?.name,
+    username: fondUser.username,
+    id: fondUser.id,
+  };
+  responce({
+    res,
+    message: `verify${fondUser.username}`,
+    code: 200,
+    data: { userInfo, accessToken },
+  });
+} catch (error) {
+  responce({
+    res,
+    message: `Request Blocked`,
+    code: 500,
+  });
+}
+ 
   }
 })();

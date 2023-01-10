@@ -45,6 +45,13 @@ export const categoryController = new (class CategoryController {
         code: 409,
       });
     }
+    const dataimg = {};
+    if (req.file !== undefined && req.file !== null) {
+      dataimg.image = req.file.path.replace(/\\/g, "/").substring(6);
+      req.body.image = `http://localhost:7000/${dataimg.image}`;
+    } else {
+      req.body.image = null;
+    }
     try {
       const newcategory = await db.Category.create({
         ...req.body,
@@ -68,7 +75,6 @@ export const categoryController = new (class CategoryController {
       });
     }
   }
-
   async getCategory(req, res) {
     //Category filter based on username and category ID
     if (req.query?.userid && req.query.bits) {
@@ -349,6 +355,7 @@ export const categoryController = new (class CategoryController {
         code: 400,
       });
     }
+
     const { bits, content, image, title } = req.body;
 
     if (!bits) {
@@ -358,46 +365,95 @@ export const categoryController = new (class CategoryController {
         code: 400,
       });
     }
-    const dublicateCategory = await db.Category.findOne({
-      where: {
-        title: title,
-        [Op.not]: {
-          bits: Number(bits),
-        },
-      },
-    });
-    if (dublicateCategory) {
-      return responce({
-        res,
-        message: "already category",
-        code: 409,
-      });
+    const dataimg = {};
+    if (req.file !== undefined && req.file !== null) {
+      dataimg.backdrop_path = req.file.path.replace(/\\/g, "/").substring(6);
+      req.body.image = `http://localhost:7000/${dataimg.backdrop_path}`;
+    } else {
+      req.body.image = null;
     }
-    try {
-      const updateCategory = await db.Category.update(
-        {
-          ...req.body,
-          username: user.toJSON().username,
-          userid: user.toJSON().id,
+    if (title) {
+      const dublicate = await db.Category.findAll({
+        where: {
+          bits: [100, 1],
         },
-        { where: { bits: Number(bits), userid: Number(req.query.userid) } }
-      );
-      if (updateCategory) {
+      });
+      if (
+        dublicate[1].bits === Number(req.query.bits) ||
+        dublicate[0].bits === Number(req.query.bits)
+      ) {
         return responce({
           res,
-          message: "Category edited successfully",
-          code: 201,
-          data: updateCategory,
+          message: "You cannot delete this category",
+          code: 409,
         });
       }
-    } catch (error) {
-      responce({
-        res,
-        message: "line in category editing",
-        code: 500,
-        data: error,
+
+      const dublicateCategory = await db.Category.findOne({
+        where: {
+          title: title,
+          [Op.not]: {
+            bits: Number(bits),
+          },
+        },
       });
-    }
+      if (dublicateCategory) {
+        return responce({
+          res,
+          message: "already category",
+          code: 409,
+        });
+      }
+      try {
+        const updateCategory = await db.Category.update(
+          {
+            ...req.body,
+            username: user.toJSON().username,
+            userid: user.toJSON().id,
+          },
+          { where: { bits: Number(bits), userid: Number(req.query.userid) } }
+        );
+        if (updateCategory) {
+          return responce({
+            res,
+            message: "Category edited successfully",
+            code: 201,
+            data: updateCategory,
+          });
+        }
+      } catch (error) {
+        responce({
+          res,
+          message: "line in category editing",
+          code: 500,
+          data: error,
+        });
+      }
+    } 
+      try {
+        const updateCategory = await db.Category.update(
+          {
+            ...req.body,
+            username: user.toJSON().username,
+            userid: user.toJSON().id,
+          },
+          { where: { bits: Number(bits), userid: Number(req.query.userid) } }
+        );
+        return responce({
+            res,
+            message: "Category edited successfully",
+            code: 200,
+            data: updateCategory,
+          });
+        
+      } catch (error) {
+        responce({
+          res,
+          message: "line in category editing",
+          code: 500,
+          data: error,
+        });
+      }
   }
 
   //Remove category
@@ -424,10 +480,13 @@ export const categoryController = new (class CategoryController {
     }
     const dublicateCategory = await db.Category.findAll({
       where: {
-        bits:[100,1]
+        bits: [100, 1],
       },
     });
-    if (dublicateCategory[1].bits === Number(req.query.bits) || dublicateCategory[0].bits === Number(req.query.bits)) {
+    if (
+      dublicateCategory[1].bits === Number(req.query.bits) ||
+      dublicateCategory[0].bits === Number(req.query.bits)
+    ) {
       return responce({
         res,
         message: "You cannot delete this category",

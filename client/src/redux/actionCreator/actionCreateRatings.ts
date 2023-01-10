@@ -18,7 +18,6 @@ export const getRatings = (movietitle: string, axiosPrivate: AxiosInstance) => {
   return async (dispatch: DispatchType) => {
     dispatch({ type: REQUESTRATING, payload: { rating: null, status: 102 } });
     try {
-      console.log(BASE_URL)
       const response = await axiosPrivate.get(
         `${BASE_URL}/ratings?movietitle=${movietitle}`
       );
@@ -57,8 +56,6 @@ export const insertRatings = (
 
     try {
       const response = await axiosPrivate.post(`${BASE_URL}/ratings`, rated);
-      // console.log(rated);
-      // console.log(response);
       dispatch({
         type: INSERTRATING,
         payload: null,

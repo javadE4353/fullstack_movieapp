@@ -5,14 +5,14 @@ const Notfount = () => {
     window.history.back()
   }
   return (
-    <section>
-      <div className="bg-black text-white">
+    <section className="container m-auto">
+      <div className=" text-white">
         <div className="flex h-screen">
           <div className="m-auto text-center">
             <div>
               <svg
-                width="631"
-                height="379"
+                width="100%"
+                height="100%"
                 viewBox="0 0 631 379"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
