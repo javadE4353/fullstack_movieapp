@@ -13,7 +13,6 @@ import { AxiosInstance } from "axios";
 
 interface Payload {
   movies: Movies[] | null;
-  Allmovie: Movies[] | null;
   insert: number;
   update: number;
   delete: number;
@@ -89,7 +88,6 @@ export const getmovies = (axiosPrivate: AxiosInstance, option: Option) => {
         payload: {
           movies: response?.data.data?.movies,
           count: response?.data.data?.count,
-          Allmovie: null,
           update: 0,
           insert: 0,
           delete: 0,
@@ -103,7 +101,6 @@ export const getmovies = (axiosPrivate: AxiosInstance, option: Option) => {
         payload: {
           movies: null,
           count: null,
-          Allmovie: null,
           update: 0,
           insert: 0,
           delete: 0,
@@ -199,6 +196,10 @@ export const getAllmovie = () => {
         },
       });
       // console.log(response);
+      if (localStorage.getItem("allMovies")) {
+        localStorage.removeItem("allMovies");
+      }
+      localStorage.setItem("allMovies", JSON.stringify(response?.data?.data || []));
     } catch (error) {
       let ErrorMsg = "error";
       dispatch({
@@ -231,7 +232,8 @@ type DispatchTypeinsert = (args: MovieActioninsert) => MovieActioninsert;
 export const insertmovie = (
   axiosPrivate: AxiosInstance,
   data: FormData,
-  userid: number
+  userid: number,
+  Dispatch: any
 ) => {
   return async (dispatch: DispatchTypeinsert) => {
     dispatch({ type: REQUESTMOVIES });
@@ -242,8 +244,11 @@ export const insertmovie = (
       );
       dispatch({
         type: REQUESTINSERTMOVIE,
-        payload: { insert:201, ErrorMessage: null },
+        payload: { insert: 201, ErrorMessage: null },
       });
+      if (response?.status == 201) {
+        Dispatch(getAllmovie());
+      }
       // console.log(response?.data?.data)
     } catch (error) {
       let ErrorMsg = "error";
@@ -276,7 +281,8 @@ export const deletemovie = (
   title: string,
   movieid: number,
   page: number,
-  pageSize: number
+  pageSize: number,
+  Dispatch: any
 ) => {
   return async (dispatch: DispatchTypedelete) => {
     dispatch({ type: REQUESTMOVIES });
@@ -301,7 +307,7 @@ export const deletemovie = (
               ErrorMessage: null,
             },
           });
-          // console.log(response?.data?.data);
+          Dispatch(getAllmovie());
         }
       }
       // console.log(response?.data?.data);
@@ -337,8 +343,9 @@ type DispatchTypeupdate = (args: MovieActionupdate) => MovieActionupdate;
 export const updatemovie = (
   axiosPrivate: AxiosInstance,
   data: FormData,
-  movieid?: number,
-  userid?: number
+  movieid: number,
+  userid: number,
+  Dispatch: any
 ) => {
   return async (dispatch: DispatchTypeupdate) => {
     dispatch({ type: REQUESTMOVIES });
@@ -349,8 +356,11 @@ export const updatemovie = (
       );
       dispatch({
         type: REQUESTUPDATEMOVIES,
-        payload: { update:200, ErrorMessage: null },
+        payload: { update: 200, ErrorMessage: null },
       });
+      if (response?.status === 200) {
+        Dispatch(getAllmovie());
+      }
     } catch (error) {
       let ErrorMsg = "error";
       dispatch({

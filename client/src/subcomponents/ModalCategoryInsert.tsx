@@ -98,7 +98,7 @@ const InsertCategoryModal = () => {
     formData.append("content", data.content);
     formData.append("bits",Bits);
     if(user?.userInfo?.id){
-    dispatch(insertCaegory(axiosPrivate,formData,user?.userInfo?.id));
+    dispatch(insertCaegory(axiosPrivate,formData,user?.userInfo?.id,dispatch));
     }
   };
   

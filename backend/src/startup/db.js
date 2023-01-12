@@ -113,8 +113,8 @@ async function initial() {
   ]);
   let cat = await db.Category.findAll({ attributes: ["bits"] });
   cat = JSON.parse(JSON.stringify(cat));
-  const HOSTNAME = process.env.NODE_ENV === "production"? process.env.HOSTNAME || '193.186.32.204': "127.0.0.1";
-  const PORT =process.env.NODE_ENV === "production" ? process.env.PORT || 80 : 7000;
+  const HOSTNAME = process.env.NODE_ENV === "production"? process.env.HOSTNAMESERVER || '127.0.0.1': "127.0.0.1";
+  const PORT =process.env.NODE_ENV === "production" ? process.env.PORTSR || 80 : 7000;
 
   await db.Movies.bulkCreate([
     {

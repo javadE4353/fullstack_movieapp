@@ -316,6 +316,7 @@ function Modal() {
     if(m.length>0 && m)setMovie(m[0])
    }
   }, [id]);
+  console.log("modal")
   return (
     <>
       <MuiModal

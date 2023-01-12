@@ -101,7 +101,7 @@ const UpdateCategoryModal = () => {
     if(data.content =="")formData.delete("content")
     if(id)formData.append("bits",id);
     if(user?.userInfo?.id && id){
-    dispatch(updateCategory(axiosPrivate,formData,user?.userInfo?.id,Number(id)));
+    dispatch(updateCategory(axiosPrivate,formData,user?.userInfo?.id,Number(id),dispatch));
     }
   };
   console.log(categorys.update)

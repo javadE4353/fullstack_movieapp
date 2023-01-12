@@ -18,7 +18,12 @@ import { actionLogout } from "../redux/actionCreator/actionCreateAuth";
 import { StateTypeAuth } from "../typeing";
 import { menuAdmin, Menus, menuUser } from "../data/dataSaidebarHome";
 
-const Sidebar = () => {
+
+interface Props{
+  role:string
+}
+
+const Sidebar = ({role}:Props) => {
   const [menus, setMenus] = useState<Menus[]>([]);
   const user = useSelector((state: StateTypeAuth) => state?.auth);
   const dispatch: Dispatch<any> = useDispatch();
@@ -34,9 +39,10 @@ const Sidebar = () => {
   };
 
   useEffect(() => {
-    user?.userInfo?.role === "admin" ? setMenus(menuAdmin) : setMenus(menuUser);
+    role === "admin" ? setMenus(menuAdmin) : setMenus(menuUser);
   }, []);
 
+  //return
   return (
     <motion.div
       initial={{ width: 0 }}
@@ -167,4 +173,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default React.memo(Sidebar);

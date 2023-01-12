@@ -200,7 +200,7 @@ const TableMovies = () => {
   //Delete the video.Based on ID and movie name
 
   const handleDeleteUser = (id: number, title: string) => {
-    dispatch(deletemovie(axiosPrivate, title, id, pageinationatom, filterow));
+    dispatch(deletemovie(axiosPrivate, title, id, pageinationatom, filterow,dispatch));
   };
 
   // Get the collection of movies as numbers
@@ -230,6 +230,7 @@ const TableMovies = () => {
     movies?.movies && setMovie(movies?.movies);
    if(movies?.count>=0) setCount(movies?.count);
   }, [movies?.movies, movies?.count]);
+  //
     useEffect(() => {
     setPageinationAtom(1)
   }, [toggleSidebarFilterM]);

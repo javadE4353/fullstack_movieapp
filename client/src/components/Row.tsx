@@ -43,14 +43,20 @@ function Row({ title, movies, category }: Props) {
         setTitle("");
       }
     }
-  }, [category ,movies]);
-
+  }, [category, movies]);
   return (
     <div className="h-40 space-y-0.5 md:space-y-2">
       {Title == category ? (
         <Link
           to="/"
-          className=" cursor-pointer text-sm font-semibold text-[#e5e5e5] transition duration-200 hover:text-white md:text-2xl pr-3 p-2 text-center border border-white rounded-md inline-block w-[30%] sm:w-[15%]"
+          className="relative cursor-pointer text-sm font-semibold text-[#e5e5e5] transition duration-200 hover:text-white md:text-2xl pr-3 p-2 text-center border border-white rounded-md inline-block w-[30%] sm:w-[15%]"
+        >
+          {title}
+        </Link>
+      ) : category === 1 ? (
+        <Link
+          to="/"
+          className="relative cursor-pointer text-sm font-semibold text-[#e5e5e5] transition duration-200 hover:text-white md:text-2xl pr-3 p-2 text-center border border-white rounded-md inline-block w-[30%] sm:w-[15%]"
         >
           {title}
         </Link>

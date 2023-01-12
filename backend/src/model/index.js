@@ -43,7 +43,7 @@ if (config.use_env_variable) {
     password: process.env.PASSWORD,
   });
   await connection.query(
-    `CREATE DATABASE IF NOT EXISTS \`${config.production?.database || process.env.DATABASE}\`;`
+    `CREATE DATABASE IF NOT EXISTS \`${ process.env.DATABASE}\`;`
   );
   sequelize = new Sequelize(
     config.database,

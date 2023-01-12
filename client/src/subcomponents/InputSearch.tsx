@@ -110,7 +110,10 @@ const InputSearch = () => {
                               onClick={() => handleShowMovie(item.id)}
                             >
                               <div className="flex gap-2 items-center ">
-                                <img className="w-4 h-4 rounded-sm sm:w-4 h-4 rounded-sm " src={`${item?.poster_path}`}/>
+                                <img
+                                  className="w-4 h-4 rounded-sm sm:w-4 h-4 rounded-sm "
+                                  src={`${item?.poster_path}`}
+                                />
                                 <span>{item.title}</span>
                               </div>
                             </Link>

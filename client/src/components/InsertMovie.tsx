@@ -127,7 +127,7 @@ const InsertMovie = () => {
     formData.append("movieid", data.movieid);
     if (data.movieid == "") formData.delete("movieid");
     if (user?.userInfo?.id) {
-      dispatch(insertmovie(axiosPrivate, formData, user?.userInfo?.id));
+      dispatch(insertmovie(axiosPrivate, formData, user?.userInfo?.id,dispatch));
     }
   };
 
@@ -136,13 +136,11 @@ const InsertMovie = () => {
   }, []);
 
 //
-
   useEffect(() => {
     if(insert === 201){
         window.history.back()
     }
   }, [insert]);
-console.log(insert)
   //return
   return (
     <>

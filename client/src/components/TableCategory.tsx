@@ -213,7 +213,7 @@ const TableCategory = () => {
   //delete category
   const deleteCategory = (bits: number) => {
     if (bits && user?.userInfo?.id)
-      dispatch(deleteCatgory(axiosPrivate, bits, user?.userInfo?.id));
+      dispatch(deleteCatgory(axiosPrivate, bits, user?.userInfo?.id,dispatch));
   };
   // Get the collection of movies as numbers
   const countCategory = async () => {

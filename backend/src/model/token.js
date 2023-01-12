@@ -11,7 +11,6 @@ export const  Token =(sequelize,DataTypes)=>{
           name: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique:true
           },
 
     },{

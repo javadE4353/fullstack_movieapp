@@ -9,33 +9,20 @@ const jwt = require("jsonwebtoken");
 
 const handleRefreshToken = async (req, res) => {
   const cookies = req.cookies;
+
   if (!cookies?.jwt) {
     return responce({
       res,
-      code: 400,
+      code: 401,
       message: "The cookie is not set in the url",
     });
   }
+
   const refreshToken = cookies.jwt;
-  // res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
-  const TokensRefresh = await db.Token.findOne({
-    where: { name: refreshToken },
-  });
 
-  if (!TokensRefresh) {
-    return responce({
-      res,
-      code: 403,
-      message: "There is no token refresh",
-    });
-  }
-  res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
+  const TokensRefresh = await db.Token.findOne({where: { name: refreshToken }});
 
-  const foundUser = await db.user.findOne({
-    where: { id: TokensRefresh?.toJSON().userId },
-  });
-
-  if (foundUser === null) {
+  if (!TokensRefresh ) {
     jwt.verify(
       refreshToken,
       process.env.SECRET_KEY_REFRESH_TOKEN,
@@ -43,7 +30,7 @@ const handleRefreshToken = async (req, res) => {
         if (err) {
           return responce({
             res,
-            code: 403,
+            code: 401,
             message: "The token has expired",
           });
         }
@@ -51,9 +38,41 @@ const handleRefreshToken = async (req, res) => {
         const hackedUser = await db.user.findOne({
           username: decoded.username,
         });
-        // const remove=  await db.Token.destroy({
-        //     where: { userId: hackedUser.toJSON().id },
-        //   });
+        const remove=  await db.Token.destroy({
+            where: {[Op.and]:[{ userId: hackedUser.toJSON().id},{name:refreshToken}] },
+          });
+      }
+    );
+    return responce({
+      res,
+      code: 403,
+      message: "There are no users with this token",
+    });
+  }
+  // res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: false });
+  res.clearCookie("jwt", { httpOnly: true, sameSite: "Lax" });
+
+  const foundUser = await db.user.findOne({where: { id: TokensRefresh?.toJSON().userId }});
+
+  if (!foundUser ) {
+    jwt.verify(
+      refreshToken,
+      process.env.SECRET_KEY_REFRESH_TOKEN,
+      async (err, decoded) => {
+        if (err) {
+          return responce({
+            res,
+            code: 401,
+            message: "The token has expired",
+          });
+        }
+
+        const hackedUser = await db.user.findOne({
+          username: decoded.username,
+        });
+        const remove=  await db.Token.destroy({
+            where: { userId: hackedUser.toJSON().id },
+          });
       }
     );
     return responce({
@@ -100,20 +119,21 @@ const handleRefreshToken = async (req, res) => {
         process.env.SECRET_KEY_REFRESH_TOKEN,
         { expiresIn: "1d" }
       );
-      await db.Token.destroy({
-        where: {
-          [Op.and]: [{ name: refreshToken }, { userId: foundUser.toJSON().id }],
-        },
-      });
       try {
-        await db.Token.create({
-          userId: foundUser.toJSON().id,
-          name: newRefreshToken,
-        });
+
+        let newToken = await db.Token.findOne({where: { name: refreshToken }});
+
+        if(newToken?.toJSON().name === refreshToken){
+          newToken.set({
+            name:newRefreshToken
+          })
+          newToken=await newToken.save()
+        }
+
         res.cookie("jwt", newRefreshToken, {
           httpOnly: true,
-          secure: true,
-          sameSite: "None",
+          // secure: false,
+          sameSite: "Lax",
           maxAge: 24 * 60 * 60 * 1000,
         });
         const userInfo = {

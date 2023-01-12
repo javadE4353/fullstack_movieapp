@@ -186,8 +186,8 @@ export const authController = new (class AuthController {
       }
       res.clearCookie("jwt", {
         httpOnly: true,
-        sameSite: "none",
-        secure: true,
+        sameSite: "Lax",
+        // secure: false,
       });
     }
 try {
@@ -198,8 +198,8 @@ try {
   // set refreshcookie in cookie client
   res.cookie("jwt", refreshToken, {
     httpOnly: true,
-    secure: true,
-    samsite: "none",
+    // secure: false,
+    samsite: "Lax",
     maxAge: 24 * 60 * 60 * 1000,
   });
   const userInfo = {

@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 
 //module external
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import { useDispatch, useSelector } from "react-redux";
-import { Dispatch } from "redux";
+import { useSelector } from "react-redux";
 //type
 import { Movies } from "../typeing";
 //components
@@ -30,8 +29,7 @@ import UpdateCategoryModal from "../subcomponents/ModalCategoryupdate";
 import TableCategory from "../components/TableCategory";
 import EditUser from "../components/EditeUser";
 import NewUser from "../components/Newuser";
-import { getPublicCategory } from "../redux/actionCreator/actionCreateCategory";
-import { getAllmovie } from "../redux/actionCreator/actionMovie";
+
 
 // interface
 interface Roles {
@@ -70,33 +68,36 @@ interface Categorys {
     ErrorMassege: string | null;
   };
 }
+
+//COMPONENT
 const ConfigPages = () => {
   const [comedy, setComedy] = useState<number>(0);
   const [action, setAction] = useState<number>(0);
 
+  //stateRedux
   const movies = useSelector((state: MoviesType) => state?.movies?.Allmovie);
   const mylist = useSelector((state: Mylist) => state?.mylist.mylist);
   const categorys = useSelector(
     (state: Categorys) => state?.categorys?.categorys
   );
-  const dispatch: Dispatch<any> = useDispatch();
+  //
   const location = useLocation();
+
+  //Roles
   const ROLES: Roles = {
     User: "user",
     Admin: "admin",
   };
 
+  //useEffect
   useEffect(() => {
     categorys?.map((item) => {
       if (item.bits == 28) setComedy(item.bits);
       if (item.bits == 80) setComedy(item.bits);
     });
   }, []);
-  useEffect(() => {
-    dispatch(getAllmovie());
-    dispatch(getPublicCategory());
-  }, []);
 
+  //return
   return (
     <AnimatePresence exitBeforeEnter>
       <Routes location={location} key={location.pathname}>

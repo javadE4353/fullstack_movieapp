@@ -120,7 +120,7 @@ type CategorysInsert = {
 };
 type DispatchTypeInsert = (args: CategorysInsert) => CategorysInsert;
 
-export const insertCaegory = (axiosPrivate:AxiosInstance,data:FormData,userid:number) => {
+export const insertCaegory = (axiosPrivate:AxiosInstance,data:FormData,userid:number,Dispatch:any) => {
   
   return async (dispatch: DispatchTypeInsert) => {
     dispatch({ type: REQUESCATEGORY ,payload:{insert:102,ErrorMassege:null}});
@@ -134,6 +134,7 @@ export const insertCaegory = (axiosPrivate:AxiosInstance,data:FormData,userid:nu
             ErrorMassege: null,
           },
         });
+        Dispatch(getPublicCategory())
       }
       // console.log(response)
     } catch (error) {
@@ -162,7 +163,7 @@ type CategoryUpdate = {
 };
 type DispatchTypeUpdate = (args: CategoryUpdate) => CategoryUpdate;
 
-export const updateCategory = (axiosPrivate:AxiosInstance,data:FormData,userid:number,bits:number) => {
+export const updateCategory = (axiosPrivate:AxiosInstance,data:FormData,userid:number,bits:number,Dispatch:any) => {
   
   return async (dispatch: DispatchTypeUpdate) => {
     dispatch({ type: REQUESCATEGORY ,payload:{update:102,ErrorMassege:null}});
@@ -176,6 +177,7 @@ export const updateCategory = (axiosPrivate:AxiosInstance,data:FormData,userid:n
             ErrorMassege: null,
           },
         });
+        Dispatch(getPublicCategory())
       }
       // console.log(response)
     } catch (error) {
@@ -204,7 +206,7 @@ type CategoryDelete = {
 };
 type DispatchTypeDelete = (args: CategoryDelete) => CategoryDelete;
 
-export const deleteCatgory = (axiosPrivate:AxiosInstance,bits:number,userid:number) => {
+export const deleteCatgory = (axiosPrivate:AxiosInstance,bits:number,userid:number,Dispatch:any) => {
 
   return async (dispatch: DispatchTypeDelete) => {
     dispatch({ type: REQUESCATEGORY ,payload:{delete:102,ErrorMassege:null}});
@@ -218,6 +220,7 @@ export const deleteCatgory = (axiosPrivate:AxiosInstance,bits:number,userid:numb
             ErrorMassege: null,
           },
         });
+        Dispatch(getPublicCategory())
       }
       // console.log(response)
     } catch (error) {
@@ -256,10 +259,13 @@ export const getPublicCategory = () => {
         dispatch({
           type: GETCATEGORYPUBLIC,
           payload: {
-            categoryPublic:response?.data?.data?.categorys,
+            categoryPublic:response.data.data.categorys,
             ErrorMassege: null,
           },
         });
+        console.log(response.data.data.categorys)
+        if(localStorage.getItem("allCategorys")){localStorage.removeItem("allCategorys")};
+        localStorage.setItem("allCategorys",JSON.stringify(response.data.data.categorys))
       }
     } catch (error) {
       let ErrorMsg = "error";

@@ -153,7 +153,7 @@ const UpdateMovie = () => {
     // if(data.movieid == "") formData.delete("movieid")
     if (user?.userInfo && id)
       dispatch(
-        updatemovie(axiosPrivate, formData, Number(id), user?.userInfo?.id)
+        updatemovie(axiosPrivate, formData, Number(id), user?.userInfo?.id,dispatch)
       );
   };
 

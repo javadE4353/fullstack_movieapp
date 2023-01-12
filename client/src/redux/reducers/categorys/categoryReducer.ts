@@ -10,34 +10,33 @@ import {
 
 import { Action } from "../../action/actionCategory";
 
-interface Cat{
-  name:string,
-  bits:number,
-  image:string,
-  content:string 
+interface Cat {
+  name: string;
+  bits: number;
+  image: string;
+  content: string;
 }
 
 interface Categorys {
   categorys: Cat[] | null;
-  categoryPublic:Cat[] | null
-  update:number
-  delete:number
-  insert:number
-  count:number 
+  categoryPublic: Cat[] | null;
+  update: number;
+  delete: number;
+  insert: number;
+  count: number;
   isloading: boolean;
-  ErrorMassege:string | null
+  ErrorMassege: string | null;
 }
 
 const initialState = {
   categorys: null,
-  categoryPublic:null,
-  update:0,
-  delete:0,
-  insert:0,
-  count:0,
+  categoryPublic: localStorage.getItem("allCategorys")?JSON.parse(localStorage.getItem("allCategorys") || `[]`):null,
+  update: 0,
+  delete: 0,
+  insert: 0,
+  count: 0,
   isloading: false,
-  ErrorMassege: null
-
+  ErrorMassege: null,
 };
 
 const categoryReducer = (state: Categorys = initialState, action: Action) => {
