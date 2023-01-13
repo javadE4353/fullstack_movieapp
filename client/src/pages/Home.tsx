@@ -82,7 +82,7 @@ const Home: React.FC = () => {
   //useEffect
   useEffect(() => {
     if (user?.accessToken && user?.userInfo?.id) {
-      dispatch(getAllmylist(axiosPrivate, user?.userInfo?.id, {}));
+      // dispatch(getAllmylist(axiosPrivate, user?.userInfo?.id, {}));
     }
   }, [location?.pathname]);
   //

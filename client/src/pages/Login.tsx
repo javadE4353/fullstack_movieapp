@@ -11,6 +11,8 @@ import { motion } from "framer-motion";
 //
 import loginAction from "../redux/actionCreator/actionCreateAuth";
 import { Movies, StateTypeAuth, Userinfo } from "../typeing";
+import { fatchLogin } from "../features/auth/auth";
+import { useAppSelector,useAppDispatch } from "../app/hooks";
 
 //interface
 interface Inputs {
@@ -33,42 +35,56 @@ function Login() {
   const [errorMsg, setErrorMsg] = useState<string>("");
 
   const [movie, setMovie] = useState<Movies | null>(null);
-  const banner = useSelector((state: MovieType) => state?.movies.movie);
+  // const banner = useSelector((state: MovieType) => state?.movies.movie);
 
-  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm<Inputs>();
-  const dispatch: Dispatch<any> = useDispatch();
-  const loginState = useSelector((state: StateTypeAuth) => state?.auth);
+  
+  //dispatch
+  // const dispatch: Dispatch<any> = useDispatch();
+  const dispatch= useAppDispatch();
+  const navigate = useNavigate();
+
+  //stateRedux
+  // const loginState = useSelector((state: StateTypeAuth) => state?.auth);
+  const auth = useAppSelector((state:StateTypeAuth) => state.auth);
+   console.log(auth)
+  //loginfatch
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    dispatch(loginAction(data?.username, data?.password));
+
+    // dispatch(loginAction(data?.username, data?.password));
+    dispatch(fatchLogin(data))
   };
+
+  //useCallback
   const checkLogin = useCallback(() => {
-    if (loginState?.errorMessage !== null && loginState?.accessToken === null) {
-      setErrorMsg(loginState?.errorMessage);
+    if (auth?.errorMessage !== null && auth?.accessToken === null) {
+      setErrorMsg(auth?.errorMessage);
       settimeRef.current = setTimeout(() => {
         setErrorMsg("");
       }, 2000);
     }
-    if (loginState?.errorMessage === null && loginState?.accessToken !== null) {
+    if (auth?.errorMessage === null && auth?.accessToken !== null) {
       setErrorMsg("");
       navigate("/");
     }
-  }, [loginState?.isLoading]);
+  }, [auth?.isLoading]);
+//useEffect
 
   useEffect(() => {
     checkLogin();
     return () => clearTimeout(settimeRef?.current as NodeJS.Timeout);
-  }, [loginState?.isLoading]);
+  }, [auth?.isLoading]);
+//
+  // useEffect(() => {
+  //   setMovie(banner?.[Math.floor(Math.random() * banner.length)]);
+  // }, [banner]);
 
-  useEffect(() => {
-    setMovie(banner?.[Math.floor(Math.random() * banner.length)]);
-  }, [banner]);
-
+//return
   return (
     <motion.div
       className="relative flex w-screen flex-col md:items-center md:justify-center"
@@ -128,10 +144,10 @@ function Login() {
                           ثبت نام
                         </Link>
                       </div>
-                      {loginState?.isLoading ? (
+                      {auth?.isLoading ? (
                         <ClipLoader
                           color={color}
-                          loading={loginState?.isLoading}
+                          loading={auth?.isLoading}
                           cssOverride={override}
                           size={50}
                           aria-label="Loading Spinner"

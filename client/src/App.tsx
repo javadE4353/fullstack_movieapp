@@ -8,7 +8,7 @@ import { Dispatch } from "redux";
 import { getAllmovie } from "./redux/actionCreator/actionMovie";
 import newAccessTokenAction from "./redux/actionCreator/actionCreateAccessToken";
 import ConfigPages from "./configPages/ConfigPages";
-import{ getPublicCategory } from "./redux/actionCreator/actionCreateCategory";
+import { getPublicCategory } from "./redux/actionCreator/actionCreateCategory";
 
 //APP
 const App: React.FC = () => {
@@ -21,7 +21,7 @@ const App: React.FC = () => {
 
   return (
     <>
-    <ConfigPages />
+      <ConfigPages />
     </>
   );
 };

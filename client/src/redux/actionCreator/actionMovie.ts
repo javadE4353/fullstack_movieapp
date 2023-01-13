@@ -111,66 +111,11 @@ export const getmovies = (axiosPrivate: AxiosInstance, option: Option) => {
   };
 };
 
-// get movie single movie action
 
-interface Payloadgetmovie {
-  movie: Movies | null;
-  insert: number;
-  update: number;
-  delete: number;
-  ErrorMessage: string | null;
-}
-
-type MovieAction = {
-  type: string;
-  payload?: Payloadgetmovie;
-};
-type DispatchTypemovie = (args: MovieAction) => MovieAction;
-
-export const getmovie = (
-  axiosPrivate: AxiosInstance,
-  category: string,
-  title: string
-) => {
-  return async (dispatch: DispatchTypemovie) => {
-    dispatch({ type: REQUESTMOVIES });
-    try {
-      const response = await axiosPrivate.get(
-        `${BASE_URL}/movies?&category=${category}&title?page=${title}`
-      );
-      dispatch({
-        type: REQUESTGETMOVIES,
-        payload: {
-          movie: response?.data.data,
-          update: 0,
-          insert: 0,
-          delete: 0,
-          ErrorMessage: null,
-        },
-      });
-      // console.log(response?.data?.data)
-    } catch (error) {
-      let ErrorMsg = "error";
-      dispatch({
-        type: REQUESTFAILMOVIES,
-        payload: {
-          movie: null,
-          update: 0,
-          insert: 0,
-          delete: 0,
-          ErrorMessage: ErrorMsg,
-        },
-      });
-    }
-  };
-};
 // get Allmovie public
 
 interface PayloadgetAllmovie {
-  Allmovie: Movies[] | null;
-  insert: number;
-  update: number;
-  delete: number;
+  Allmovie: Movies[];
   ErrorMessage: string | null;
 }
 
@@ -189,9 +134,6 @@ export const getAllmovie = () => {
         type: REQUESTGETALLMOVIE,
         payload: {
           Allmovie: response?.data?.data,
-          update: 0,
-          insert: 0,
-          delete: 0,
           ErrorMessage: null,
         },
       });
@@ -199,16 +141,16 @@ export const getAllmovie = () => {
       if (localStorage.getItem("allMovies")) {
         localStorage.removeItem("allMovies");
       }
-      localStorage.setItem("allMovies", JSON.stringify(response?.data?.data || []));
+      localStorage.setItem(
+        "allMovies",
+        JSON.stringify(response?.data?.data)
+      );
     } catch (error) {
       let ErrorMsg = "error";
       dispatch({
         type: REQUESTFAILMOVIES,
         payload: {
-          Allmovie: null,
-          update: 0,
-          insert: 0,
-          delete: 0,
+          Allmovie: localStorage.getItem("allMovies")?JSON.parse(localStorage.getItem("allMovies") || `[]`):null,
           ErrorMessage: ErrorMsg,
         },
       });

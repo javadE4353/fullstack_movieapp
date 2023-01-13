@@ -75,11 +75,11 @@ const ConfigPages = () => {
   const [action, setAction] = useState<number>(0);
 
   //stateRedux
-  const movies = useSelector((state: MoviesType) => state?.movies?.Allmovie);
-  const mylist = useSelector((state: Mylist) => state?.mylist.mylist);
-  const categorys = useSelector(
-    (state: Categorys) => state?.categorys?.categorys
-  );
+  // const movies = useSelector((state: MoviesType) => state?.movies?.Allmovie);
+  // const mylist = useSelector((state: Mylist) => state?.mylist.mylist);
+  // const categorys = useSelector(
+  //   (state: Categorys) => state?.categorys?.categorys
+  // );
   //
   const location = useLocation();
 
@@ -90,12 +90,12 @@ const ConfigPages = () => {
   };
 
   //useEffect
-  useEffect(() => {
-    categorys?.map((item) => {
-      if (item.bits == 28) setComedy(item.bits);
-      if (item.bits == 80) setComedy(item.bits);
-    });
-  }, []);
+  // useEffect(() => {
+  //   categorys?.map((item) => {
+  //     if (item.bits == 28) setComedy(item.bits);
+  //     if (item.bits == 80) setComedy(item.bits);
+  //   });
+  // }, []);
 
   //return
   return (
@@ -104,76 +104,7 @@ const ConfigPages = () => {
         {/* Route default */}
         <Route path="/login" element={<Login />}></Route>
         <Route path="/register" element={<Register />}></Route>
-        <Route path="/" element={<Home />}>
-          <Route path="movie/:id" element={<Modal />} />
-        </Route>
-        <Route path="/unauthorized" element={<Unauthorized />}></Route>
-        <Route
-          path="/comedy"
-          element={<Category movie={movies} gener={comedy} />}
-        >
-          <Route path="movie/:id" element={<Modal />} />
-        </Route>
-        <Route
-          path="/action"
-          element={<Category movie={movies} gener={action} />}
-        >
-          <Route path="movie/:id" element={<Modal />} />
-        </Route>
-        {/* Role Admin */}
-        <Route element={<RequiredAuth allowedRoles={[ROLES.Admin]} />}>
-          <Route path="/dashboard" element={<Dashboard path={"admin"} />}>
-            {/* TABLEUSERS */}
-            <Route path="users" element={<ViewTableUser />}>
-              <Route path="update/:id" element={<EditUser path={"users"} />} />
-              <Route path="insert" element={<NewUser />} />
-            </Route>
-            {/* PROFILE */}
-            <Route path="profile" element={<Profile />}>
-              <Route path="edit/:id" element={<EditUser path={"profile"} />} />
-            </Route>
-            {/* TABLEMOVIES */}
-            <Route path="movies" element={<TableMovies />} />
-            <Route path="editmovie/:id" element={<UpdateMovie />} />
-            <Route path="addmovie" element={<InsertMovie />} />
-            {/* TABLECATEGORY */}
-            <Route path="category" element={<TableCategory />}>
-              <Route path="update/:id" element={<UpdateCategoryModal />} />
-              <Route path="insert" element={<InsertCategoryModal />} />
-            </Route>
-            {/* MYLIST */}
-            <Route path="mylist" element={<TableMovieMylist />}></Route>
-            {/* NOTFOUNT */}
-            <Route path="*" element={<Notfount />}></Route>
-          </Route>
-          <Route path="/account" element={<Account />}></Route>
-          <Route
-            path="/mylist"
-            element={<Category movie={mylist} gener={categoryMovies?.mylist} />}
-          >
-            <Route path="movie/:id" element={<Modal />} />
-          </Route>
-        </Route>
-        {/* Role User */}
-        <Route element={<RequiredAuth allowedRoles={[ROLES.User]} />}>
-          <Route path="/dashboard/me" element={<Dashboard path={"user"} />}>
-            <Route path="mylist" element={<TableMovieMylist />}></Route>
-            <Route path="profile" element={<Profile />}>
-              <Route path="edit/:id" element={<EditUser path={"profile"} />} />
-            </Route>
-            <Route path="*" element={<Notfount />}></Route>
-          </Route>
-          <Route path="create/account" element={<Account />}></Route>
-          <Route
-            path="/me/mylist"
-            element={<Category movie={mylist} gener={categoryMovies?.mylist} />}
-          >
-            <Route path="movie/:id" element={<Modal />} />
-          </Route>
-        </Route>
-        {/* Route Notfount */}
-        <Route path="*" element={<Notfount />}></Route>
-      </Routes>
+     </Routes>
     </AnimatePresence>
   );
 };

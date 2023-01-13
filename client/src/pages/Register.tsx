@@ -8,6 +8,9 @@ import { motion } from "framer-motion";
 
 //
 import { axiospublic, BASE_URL } from "../axios/configApi";
+import { useAppSelector,useAppDispatch } from "../app/hooks";
+import { fatchRegister } from "../features/auth/auth";
+import { StateTypeAuth } from "../typeing";
 
 //interface
 const override: CSSProperties = {
@@ -36,29 +39,39 @@ function Register() {
     formState: { errors },
   } = useForm<Inputs>();
 
+  //stateRedux
+  const auth = useAppSelector((state:StateTypeAuth) => state.auth);
+console.log(auth)
+  //
+  const dispatch= useAppDispatch();
+
+
+
+  //fatchRegister
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    try {
-      if (!Errormsg) {
-        setIsloading(true);
-        const res = await axiospublic.post<Inputs>(`/auth/regeister`, data);
-        setIsloading(false);
-        navigate("/login");
-      }
-    } catch (error: any) {
-      console.log(error?.response)
-      let ErrorMessage = "";
-      if (error?.response?.status === 401) {
-        ErrorMessage = " اطلاعات وارد شده صحیح نمیباشد";
-      }
-      if (error?.response?.status === 409) {
-        ErrorMessage = "نام کاربری وجود دارد";
-      }
-      if (error?.response?.status !== 409 && error?.response?.status !== 401) {
-        ErrorMessage = " لطفا بعدا دوباره امتحان کنید";
-      }
-      setIsloading(false);
-      setErrormsg(ErrorMessage);
-    }
+    // try {
+    //   if (!Errormsg) {
+    //     setIsloading(true);
+    //     const res = await axiospublic.post<Inputs>(`/auth/regeister`, data);
+    //     setIsloading(false);
+    //     navigate("/login");
+    //   }
+    // } catch (error: any) {
+    //   console.log(error?.response)
+    //   let ErrorMessage = "";
+    //   if (error?.response?.status === 401) {
+    //     ErrorMessage = " اطلاعات وارد شده صحیح نمیباشد";
+    //   }
+    //   if (error?.response?.status === 409) {
+    //     ErrorMessage = "نام کاربری وجود دارد";
+    //   }
+    //   if (error?.response?.status !== 409 && error?.response?.status !== 401) {
+    //     ErrorMessage = " لطفا بعدا دوباره امتحان کنید";
+    //   }
+    //   setIsloading(false);
+    //   setErrormsg(ErrorMessage);
+    // }
+    dispatch(fatchRegister(data))
   };
 
   return (
@@ -75,7 +88,7 @@ function Register() {
               <div className="lg:text-left text-center">
                 <div className="flex items-center justify-center w-full">
                   <div className=" flex flex-col w-full border border-indigo-600 rounded-lg px-8 py-10">
-                    <span className="text-red-400 text-center">{Errormsg}</span>
+                    <span className="text-red-400 text-center">{auth?.errorMessage}</span>
                     <h1 className="text-4xl font-semibold text-center text-red-400">
                       ثبت نام
                     </h1>
@@ -153,10 +166,10 @@ function Register() {
                           وارد شوید
                         </Link>
                       </div>
-                      {isloading ? (
+                      {auth?.isLoading ? (
                         <ClipLoader
                           color={color}
-                          loading={isloading}
+                          loading={auth?.isLoading}
                           cssOverride={override}
                           size={50}
                           aria-label="Loading Spinner"

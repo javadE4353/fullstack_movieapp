@@ -10,7 +10,7 @@ import sidebarToggle from "./sidebarReducer/sidebarReducer";
 import categoryReducer from "./categorys/categoryReducer";
 import usersReducer from "./userReducer/userReducer";
 const reducer=combineReducers({
-    auth:loginReducer,
+    // auth:loginReducer,
     accesstoken:accessTokenReducer,
     movies:movieReducer,
     categorys:categoryReducer,

@@ -50,7 +50,6 @@ const overrideupdate: CSSProperties = {
 interface MoviesType {
   movies: {
     movies: Movies[];
-    movie: Movies;
     count: number;
     insert: number;
     update: number;

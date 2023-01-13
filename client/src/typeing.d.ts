@@ -111,6 +111,7 @@ export interface StateTypeAuth {
     accessToken: string | null;
     userInfo: Userinfo | null;
     isLoading: boolean;
+    message:string
     errorMessage: null | string;
   };
 }
