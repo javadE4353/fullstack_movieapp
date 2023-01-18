@@ -1,14 +1,12 @@
-import { useState, useEffect, useCallback,CSSProperties } from "react";
+import { useState, useEffect, useCallback, CSSProperties } from "react";
 
 //module external
 import { AnimatePresence, motion } from "framer-motion";
 import { useForm, SubmitHandler } from "react-hook-form";
 import MoonLoader from "react-spinners/MoonLoader";
 import { useRecoilState } from "recoil";
-import { Dispatch } from "redux";
 import * as timeago from "timeago.js/lib/index";
 import { HiPencil, HiMinus, HiPlus } from "react-icons/hi2";
-import { useSelector, useDispatch } from "react-redux";
 import { BsX } from "react-icons/bs";
 import MuiModal from "@mui/material/Modal";
 
@@ -18,13 +16,13 @@ import {
   HiOutlineUserPlus,
   HiDocumentDuplicate,
 } from "react-icons/hi2";
-import {Outlet} from "react-router-dom"
+import { Outlet } from "react-router-dom";
 //
 import { pageinationAtom } from "../atoms/modalAtom";
 
 import useAxiosPrivate from "../hook/useAxiosPrivate";
 
-import { Users, StateTypeAuth, Movies } from "../typeing";
+import { Users, StateTypeAuth, Movies, Categories } from "../typeing";
 import Pageination from "../subcomponents/Pagination";
 import { Link } from "react-router-dom";
 import { axiospublic, BASE_URL } from "../axios/configApi";
@@ -33,6 +31,12 @@ import getCategorys, {
   deleteCatgory,
 } from "../redux/actionCreator/actionCreateCategory";
 import { filterRow } from "../data/filter";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
+import {
+  fatchCategorys,
+  fatchDeleteCategory,
+  restartDefaultCategorys,
+} from "../features/categorys/category";
 
 //interface
 interface State {
@@ -81,14 +85,14 @@ interface Input {
 }
 interface Categorys {
   categorys: {
-    categorys: Cat[];
-    categoryPublic: Cat[];
-    count: number;
+    categorys: Categories[];
+    categoryPublic: Categories[];
     update: number;
     delete: number;
     insert: number;
-    isloading: boolean;
-    ErrorMassege: string | null;
+    count: number;
+    isLoading: boolean;
+    ErrorMassege: string;
   };
 }
 const menuVariants = {
@@ -116,8 +120,8 @@ const menuVariantsSectionFillter = {
 const TableCategory = () => {
   const [pageinationatom, setPageinationAtom] = useRecoilState(pageinationAtom);
   // state movies
-  const [category, setCategory] = useState<Cat[]>([]);
-  const [categoryArray, setCategoryArray] = useState<Cat[]>([]);
+  const [category, setCategory] = useState<Categories[]>([]);
+  const [categoryArray, setCategoryArray] = useState<Categories[]>([]);
   const [count, setCount] = useState<number>(0);
   //   Saved number of videos and creators of videos
   const [filterusername, setfilterusrname] = useState<FilterUsername[]>([]);
@@ -140,15 +144,15 @@ const TableCategory = () => {
     formState: { errors },
   } = useForm<Input>();
   //
-  const categorys = useSelector((state: Categorys) => state?.categorys);
-  const user = useSelector((state: StateTypeAuth) => state?.auth);
+  const categorys = useAppSelector((state: Categorys) => state?.categorys);
+  const user = useAppSelector((state: StateTypeAuth) => state?.auth);
   //
-  const dispatch: Dispatch<any> = useDispatch();
+  const dispatch = useAppDispatch();
   const axiosPrivate = useAxiosPrivate();
   // search category
   const searchCategory = (search: string) => {
     if (search) {
-      dispatch(getCategorys(axiosPrivate, { search }));
+      dispatch(fatchCategorys({ axiosPrivate, search }));
     } else {
     }
   };
@@ -157,7 +161,8 @@ const TableCategory = () => {
   const handleUsernameAndCategory = useCallback(() => {
     if (filterfilterUser && filterCategory) {
       dispatch(
-        getCategorys(axiosPrivate, {
+        fatchCategorys({
+          axiosPrivate,
           page: pageinationatom,
           pageSize: filterow,
           userid: filterfilterUser,
@@ -170,7 +175,8 @@ const TableCategory = () => {
   const handleUsernameFilter = useCallback(() => {
     if (filterfilterUser && !filterCategory) {
       dispatch(
-        getCategorys(axiosPrivate, {
+        fatchCategorys({
+          axiosPrivate,
           page: pageinationatom,
           pageSize: filterow,
           userid: filterfilterUser,
@@ -183,7 +189,8 @@ const TableCategory = () => {
   const handleCategorysFilter = useCallback(() => {
     if (filterCategory && !filterfilterUser) {
       dispatch(
-        getCategorys(axiosPrivate, {
+        fatchCategorys({
+          axiosPrivate,
           bits: filterCategory,
           page: pageinationatom,
           pageSize: filterow,
@@ -195,7 +202,8 @@ const TableCategory = () => {
   const handlePageintaion = useCallback(() => {
     if (!filterCategory && !filterfilterUser) {
       dispatch(
-        getCategorys(axiosPrivate, {
+        fatchCategorys({
+          axiosPrivate,
           page: pageinationatom,
           pageSize: filterow,
         })
@@ -204,16 +212,18 @@ const TableCategory = () => {
   }, [pageinationatom, filterow]);
 
   useEffect(() => {
-  if(!filterCategory && !filterfilterUser) handlePageintaion();
-  if(filterCategory && !filterfilterUser) handleCategorysFilter();
-  if(filterfilterUser && !filterCategory) handleUsernameFilter();
+    if (!filterCategory && !filterfilterUser) handlePageintaion();
+    if (filterCategory && !filterfilterUser) handleCategorysFilter();
+    if (filterfilterUser && !filterCategory) handleUsernameFilter();
     handleUsernameAndCategory();
   }, [pageinationatom, filterCategory, filterfilterUser, filterow]);
 
   //delete category
   const deleteCategory = (bits: number) => {
     if (bits && user?.userInfo?.id)
-      dispatch(deleteCatgory(axiosPrivate, bits, user?.userInfo?.id,dispatch));
+      dispatch(
+        fatchDeleteCategory({ axiosPrivate, bits, userid: user?.userInfo?.id })
+      );
   };
   // Get the collection of movies as numbers
   const countCategory = async () => {
@@ -228,19 +238,19 @@ const TableCategory = () => {
   //  Back to default when entering the page
   useEffect(() => {
     countCategory();
-    dispatch(
-      getCategorys(axiosPrivate, { page: 1, pageSize: filterow })
-    );
+    dispatch(fatchCategorys({ axiosPrivate, page: 1, pageSize: filterow }));
   }, [categorys?.delete]);
+  useEffect(() => {
+    dispatch(restartDefaultCategorys())
+  }, []);
   // update state movies and countMovies
   useEffect(() => {
     categorys?.categorys && setCategory(categorys?.categorys);
-   if(categorys?.count>=0) setCount(categorys?.count);
+    if (categorys?.count >= 0) setCount(categorys?.count);
   }, [categorys?.categorys, categorys?.count]);
   useEffect(() => {
-    setPageinationAtom(1)
+    setPageinationAtom(1);
   }, [toggleSidebarFilterM]);
-
   //return
   return (
     <motion.div
@@ -248,13 +258,13 @@ const TableCategory = () => {
     //   animate={{x:0,transition: { duration: 0.755 } }}
     //  exit={{x: -window.innerWidth, transition: { duration: 0.755 } }}
     >
-       <MuiModal
-        open={categorys?.isloading?true:false}
+      <MuiModal
+        open={categorys?.isLoading ? true : false}
         className="fixed top-7 left-0 right-0 z-50 mx-auto w-full max-w-5xl overflow-hidden overflow-y-scroll rounded-md scrollbar-hide"
       >
         <MoonLoader
           color={"#36d7b7"}
-          loading={categorys?.isloading?true:false}
+          loading={categorys?.isLoading ? true : false}
           cssOverride={overrideupdate}
           size={50}
           aria-label="Loading Spinner"
@@ -504,9 +514,7 @@ const TableCategory = () => {
 
       {/* content table */}
 
-      <div
-        className="p-4 overflow-x-auto relative shadow-md bg-[#f7f7f7] h-screen"
-      >
+      <div className="p-4 overflow-x-auto relative shadow-md bg-[#f7f7f7] h-screen">
         <div className="flex justify-between items-center mb-4 rounded-sm p-4 bg-white dark:bg-gray-900">
           <div className="flex justify-between items-center">
             <div>
@@ -578,7 +586,12 @@ const TableCategory = () => {
               {category?.map((item, i) => (
                 <tr
                   key={i}
-                  className={`dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 ${timeago.format(item?.createdAt).includes("just") || timeago.format(item?.createdAt).includes("just")?"bg-green-400":"bg-white"}`}
+                  className={`dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600 ${
+                    timeago.format(item?.createdAt).includes("just") ||
+                    timeago.format(item?.createdAt).includes("just")
+                      ? "bg-green-400"
+                      : "bg-white"
+                  }`}
                 >
                   <td className="border border-slate-300 p-4 w-4">
                     <div className="flex items-center">
@@ -615,7 +628,9 @@ const TableCategory = () => {
                     </div>
                   </th>
                   <td className="border border-slate-300 py-4 px-6">
-                    <div className="flex items-center">{timeago.format(item?.createdAt)}</div>
+                    <div className="flex items-center">
+                      {timeago.format(item?.createdAt)}
+                    </div>
                   </td>
                   <td className="border border-slate-300 py-4 px-6 overflow-hidden">
                     <div className="flex items-center">{item?.content}</div>
@@ -624,8 +639,7 @@ const TableCategory = () => {
                     <div className="flex items-center">{item?.bits}</div>
                   </td>
                   <td className="border border-slate-300 py-4 px-6 overflow-hidden">
-                    <div className="flex items-center">
-                      {item?.username}</div>
+                    <div className="flex items-center">{item?.username}</div>
                   </td>
                   <td className="border border-slate-300 py-4 px-6">
                     <div className="flex justfy-center items-center  rounded-sm">
@@ -666,7 +680,7 @@ const TableCategory = () => {
             </div>
           </div>
         </div>
-        <Outlet/>
+        <Outlet />
       </div>
     </motion.div>
   );

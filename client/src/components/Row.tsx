@@ -6,7 +6,12 @@ import { Movies } from "../typeing";
 import Thumbnail from "./thumbnail";
 import { Link } from "react-router-dom";
 import { moviefake } from "../data/data";
-
+import { Navigation, Pagination, Scrollbar, A11y } from 'swiper';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/scrollbar';
 //interface
 interface Props {
   title: string;
@@ -45,7 +50,7 @@ function Row({ title, movies, category }: Props) {
     }
   }, [category, movies]);
   return (
-    <div className="h-40 space-y-0.5 md:space-y-2">
+    <div className="space-y-0.5 md:space-y-2">
       {Title == category ? (
         <Link
           to="/"
@@ -61,40 +66,59 @@ function Row({ title, movies, category }: Props) {
           {title}
         </Link>
       ) : null}
-      <div className="group relative md:-ml-2">
-        <BsChevronLeft
-          className={`absolute top-0 bottom-0 left-2 z-40 m-auto h-9 w-9 cursor-pointer opacity-0 transition hover:scale-125 group-hover:opacity-100 `}
-          onClick={() => handleClick("left")}
-        />
-        <div
-          className="flex items-center space-x-0.5 overflow-x-scroll overflow-y-hidden scrollbar-hide md:space-x-2.5 md:p-2"
-          ref={rowRef}
-        >
+      <div className="relative md:-ml-2">
+      <Swiper
+       spaceBetween={30}
+       slidesPerView={2}
+       navigation
+       loop={false}
+       modules={[Navigation, Pagination]}
+
+      //  onSlideChange={() => console.log('slide change')}
+      //  onSwiper={(swiper) => console.log(swiper)}
+       breakpoints={
+          {
+            380: {
+              slidesPerView: 2,
+              spaceBetween: 20
+            },
+            412: {
+              slidesPerView: 2,
+              spaceBetween: 20
+            },
+            480: {
+              slidesPerView: 3,
+              spaceBetween: 20
+            },
+            768: {
+              slidesPerView: 4,
+              spaceBetween: 20
+            },
+            992: {
+              slidesPerView:6,
+              spaceBetween: 20
+            },
+            1200: {
+              slidesPerView: 6,
+              spaceBetween: 20
+            },
+            1300: {
+              slidesPerView: 6,
+              spaceBetween: 20
+            },
+          }
+       }
+    >
           {movies?.map((movie, i) => (
-            <>
-              {category === 1 && movie?.movieid ? (
-                <>
-                  <Thumbnail key={movie.id} movie={movie} category={category} />
-                </>
-              ) : (
-                <>
-                  {movie?.genre_ids.includes(category) && (
-                    <Thumbnail
+               <SwiperSlide>
+                     <Thumbnail
                       key={movie.id}
                       movie={movie}
                       category={category}
                     />
-                  )}
-                </>
-              )}
-            </>
+                </SwiperSlide>
           ))}
-        </div>
-        <BsChevronRight
-          className={`absolute top-0 bottom-0 right-2 z-40 m-auto h-9 w-9 cursor-pointer opacity-0 transition hover:scale-125 group-hover:opacity-100 
-          ${!isMoved && "hidden"}`}
-          onClick={() => handleClick("right")}
-        />
+        </Swiper>
       </div>
     </div>
   );

@@ -1,28 +1,38 @@
 import { useEffect } from "react";
-
-//module external
-import { useDispatch } from "react-redux";
-import { Dispatch } from "redux";
+import { ToastContainer, toast } from 'react-toastify';
 
 //
-import { getAllmovie } from "./redux/actionCreator/actionMovie";
-import newAccessTokenAction from "./redux/actionCreator/actionCreateAccessToken";
+import {useAppDispatch } from "./app/hooks";
 import ConfigPages from "./configPages/ConfigPages";
-import { getPublicCategory } from "./redux/actionCreator/actionCreateCategory";
+import { fatchCategorysPublic } from "./features/categorys/category";
+import { fatchRefreshToken } from "./features/auth/auth";
+import { fatchmoviesPublic } from "./features/movies/movies";
 
 //APP
 const App: React.FC = () => {
-  const dispatch: Dispatch<any> = useDispatch();
+  const dispatch = useAppDispatch();
   useEffect(() => {
-    dispatch(getAllmovie());
-    dispatch(getPublicCategory());
-    dispatch(newAccessTokenAction(dispatch));
+    dispatch(fatchmoviesPublic());
+    dispatch(fatchCategorysPublic());
+    dispatch(fatchRefreshToken());
   }, []);
 
   return (
-    <>
+    <div className="">
       <ConfigPages />
-    </>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={true}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        />
+    </div>
   );
 };
 

@@ -3,18 +3,19 @@ import { useState, CSSProperties, useEffect } from "react";
 //module extra
 import { useForm, SubmitHandler } from "react-hook-form";
 import { motion } from "framer-motion";
-import { useDispatch, useSelector } from "react-redux";
-import { Dispatch } from "redux";
 import { useRecoilState } from "recoil";
 import { Link, useNavigate, Outlet, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 //
 import useAxiosPrivate from "../hook/useAxiosPrivate";
-import { Users, Movies, StateTypeAuth } from "../typeing";
+import { Users, Movies, StateTypeAuth, Categories } from "../typeing";
 import { modalCreateUser } from "../atoms/modalAtom";
 import { getPublicCategory } from "../redux/actionCreator/actionCreateCategory";
 import { updatemovie } from "../redux/actionCreator/actionMovie";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
+import { fatchUpdateMovies } from "../features/movies/movies";
+import { fatchCategorysPublic } from "../features/categorys/category";
 
 // interface and stylecss
 const override: CSSProperties = {
@@ -43,14 +44,14 @@ interface State {
 }
 interface MoviesType {
   movies: {
-    movies: Movies[];
-    movie: Movies;
-    count: number;
+    movies: Movies[] ;
+    Allmovie: Movies[] ;
     insert: number;
     update: number;
     delete: number;
-    isloading: boolean;
-    ErrorMessage: string | null;
+    count:number 
+    isLoading: boolean;
+    ErrorMessage:string 
   };
 }
 interface Inputs {
@@ -78,13 +79,14 @@ interface Cat {
 }
 interface Categorys {
   categorys: {
-    categorys: Cat[];
-    categoryPublic: Cat[];
+    categorys: Categories[] ;
+    categoryPublic: Categories[] ;
     update: number;
     delete: number;
     insert: number;
-    isloading: boolean;
-    ErrorMassege: string | null;
+    count: number;
+    isLoading: boolean;
+    ErrorMassege: string;
   };
 }
 const UpdateMovie = () => {
@@ -93,11 +95,11 @@ const UpdateMovie = () => {
   //state movie and category
   const [showModalCreateUser, setShowModalCreateUser] =
     useRecoilState(modalCreateUser);
-  const categorys = useSelector(
+  const categorys = useAppSelector(
     (state: Categorys) => state?.categorys?.categoryPublic
   );
-  const movies = useSelector((state: MoviesType) => state?.movies);
-  const user = useSelector((state: StateTypeAuth) => state?.auth);
+  const movies = useAppSelector((state: MoviesType) => state?.movies);
+  const user = useAppSelector((state: StateTypeAuth) => state?.auth);
 
   //
   const [Errormsg, setErrormsg] = useState<string>("");
@@ -107,7 +109,7 @@ const UpdateMovie = () => {
   //
   const navigate = useNavigate();
   const { id } = useParams();
-  const dispatch: Dispatch<any> = useDispatch();
+  const dispatch = useAppDispatch();
   const axiosPrivate = useAxiosPrivate();
   const {
     register,
@@ -120,11 +122,10 @@ const UpdateMovie = () => {
   };
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    console.log(data)
     const formData = new FormData();
     formData.append("adult", data.adult);
     if (data.adult == "") formData.delete("adult");
-    // formData.append("backdrop_path", data.backdrop_path[0]);
-    // if (data.backdrop_path == null) formData.delete("backdrop_path");
     formData.append("genre_ids", data.genre_ids);
     if (data.genre_ids == "") formData.delete("genre_ids");
     formData.append("original_language", data.original_language);
@@ -153,12 +154,12 @@ const UpdateMovie = () => {
     // if(data.movieid == "") formData.delete("movieid")
     if (user?.userInfo && id)
       dispatch(
-        updatemovie(axiosPrivate, formData, Number(id), user?.userInfo?.id,dispatch)
+        fatchUpdateMovies({axiosPrivate, data:formData, movieid:Number(id),userid: user?.userInfo?.id})
       );
   };
 
   useEffect(() => {
-    dispatch(getPublicCategory());
+    dispatch(fatchCategorysPublic());
   }, []);
   
   //

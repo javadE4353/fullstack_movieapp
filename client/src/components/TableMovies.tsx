@@ -3,10 +3,8 @@ import { useState, useEffect, useCallback ,CSSProperties} from "react";
 //module external
 import { motion, AnimatePresence } from "framer-motion";
 import { useRecoilState } from "recoil";
-import { Dispatch } from "redux";
 import * as timeago from "timeago.js/lib/index";
 import { HiPencil, HiMinus, HiPlus } from "react-icons/hi2";
-import { useSelector, useDispatch } from "react-redux";
 import { BsX } from "react-icons/bs";
 import MuiModal from "@mui/material/Modal";
 import MoonLoader from "react-spinners/MoonLoader";
@@ -23,21 +21,22 @@ import { pageinationAtom } from "../atoms/modalAtom";
 
 import useAxiosPrivate from "../hook/useAxiosPrivate";
 
-import { Users, StateTypeAuth, Movies } from "../typeing";
+import { Users, StateTypeAuth, Movies, Categories } from "../typeing";
 import Pageination from "../subcomponents/Pagination";
 import { tableMovies } from "../data/dataTableMovies";
 import { Link, useNavigate } from "react-router-dom";
 import  { axiospublic, BASE_URL } from "../axios/configApi";
-import getmovies, { deletemovie } from "../redux/actionCreator/actionMovie";
 import { filterRow } from "../data/filter";
-import getCategorys, { getPublicCategory } from "../redux/actionCreator/actionCreateCategory";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
+import { fatchDeleteMovies, fatchmovies, restartDefaultMovies } from "../features/movies/movies";
+import { fatchCategorysPublic } from "../features/categorys/category";
 
 //interface
 interface State {
   users: {
     users: Users[] | null;
     count: number;
-    isloading: boolean;
+    isLoading: boolean;
     ErrorMessage: string | null;
   };
 }
@@ -49,13 +48,14 @@ const overrideupdate: CSSProperties = {
 };
 interface MoviesType {
   movies: {
-    movies: Movies[];
-    count: number;
+    movies: Movies[] ;
+    Allmovie: Movies[] ;
     insert: number;
     update: number;
     delete: number;
-    isloading: boolean;
-    ErrorMessage: string | null;
+    count:number 
+    isLoading: boolean;
+    ErrorMessage:string 
   };
 }
 interface Cat {
@@ -66,13 +66,14 @@ interface Cat {
 }
 interface Categorys {
   categorys: {
-    categorys: Cat[];
-    categoryPublic:Cat[];
+    categorys: Categories[] ;
+    categoryPublic: Categories[] ;
     update: number;
     delete: number;
     insert: number;
-    isloading: boolean;
-    ErrorMassege: string | null;
+    count: number;
+    isLoading: boolean;
+    ErrorMassege: string;
   };
 }
 interface User {
@@ -122,19 +123,18 @@ const TableMovies = () => {
   // show sidebar filter ___ mobile
   const [toggleSidebarFilterM, setToggleSidebarFilterM] =useState<boolean>(false);
   // state movies and categorys
-  const movies = useSelector((state: MoviesType) => state?.movies);
-  const categorys = useSelector(
+  const movies = useAppSelector((state: MoviesType) => state?.movies);
+  const categorys = useAppSelector(
     (state: Categorys) => state?.categorys?.categoryPublic);
   //
-  const dispatch: Dispatch<any> = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
 
   //Filter control based on video creator
   const handleSearchMovie = (value:string) => {
     if (value) {
-      console.log(value)
-      dispatch(getmovies(axiosPrivate, {search:value}));
+      dispatch(fatchmovies({axiosPrivate,search:value}));
     }
   };
 
@@ -142,7 +142,7 @@ const TableMovies = () => {
   const handleUsernameAndCategory = useCallback(() => {
     if (filterfilterUser && filterCategory) {
       dispatch(
-        getmovies(axiosPrivate, {
+        fatchmovies({axiosPrivate,
           page: pageinationatom,
           pageSize: filterow,
           username: filterfilterUser,
@@ -155,7 +155,7 @@ const TableMovies = () => {
   const handleUsernameFilter = useCallback(() => {
     if (filterfilterUser && !filterCategory) {
       dispatch(
-        getmovies(axiosPrivate, {
+        fatchmovies({axiosPrivate,
           page: pageinationatom,
           pageSize: filterow,
           username: filterfilterUser,
@@ -168,7 +168,7 @@ const TableMovies = () => {
   const handleCategorysFilter = useCallback(() => {
     if (filterCategory && !filterfilterUser) {
       dispatch(
-        getmovies(axiosPrivate, {
+        fatchmovies({axiosPrivate,
           category: filterCategory,
           page: pageinationatom,
           pageSize: filterow,
@@ -180,7 +180,7 @@ const TableMovies = () => {
   const handlePageintaion = useCallback(() => {
     if (!filterCategory && !filterfilterUser) {
       dispatch(
-        getmovies(axiosPrivate, {
+        fatchmovies({axiosPrivate,
           page: pageinationatom,
           pageSize: filterow,
         })
@@ -199,7 +199,7 @@ const TableMovies = () => {
   //Delete the video.Based on ID and movie name
 
   const handleDeleteUser = (id: number, title: string) => {
-    dispatch(deletemovie(axiosPrivate, title, id, pageinationatom, filterow,dispatch));
+    dispatch(fatchDeleteMovies({axiosPrivate, title,movieid:id,page: pageinationatom, pageSize:filterow}));
   };
 
   // Get the collection of movies as numbers
@@ -220,10 +220,13 @@ const TableMovies = () => {
   useEffect(() => {
     countMovie();
     dispatch(
-      getmovies(axiosPrivate, { page: 1, pageSize: filterow })
+      fatchmovies({axiosPrivate, page: 1, pageSize: filterow })
     );
-    dispatch(getPublicCategory());
+    dispatch(fatchCategorysPublic());
   }, [movies?.delete]);
+  useEffect(() => {
+    dispatch(restartDefaultMovies());
+  }, []);
   // update state movies and countMovies
   useEffect(() => {
     movies?.movies && setMovie(movies?.movies);
@@ -237,12 +240,12 @@ const TableMovies = () => {
   return (
     <>
     <MuiModal
-    open={movies?.isloading?true:false}
+    open={movies?.isLoading?true:false}
     className="fixed top-7 left-0 right-0 z-50 mx-auto w-full max-w-5xl overflow-hidden overflow-y-scroll rounded-md scrollbar-hide"
   >
     <MoonLoader
       color={"#36d7b7"}
-      loading={movies?.isloading?true:false}
+      loading={movies?.isLoading?true:false}
       cssOverride={overrideupdate}
       size={50}
       aria-label="Loading Spinner"

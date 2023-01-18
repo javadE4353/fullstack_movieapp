@@ -18,5 +18,6 @@ module.exports = {
     require('tailwind-scrollbar-hide'),
     require('@tailwindcss/line-clamp'),
     require('tailwindcss-textshadow'),
+    require("@tailwindcss/aspect-ratio"),
   ],
 }

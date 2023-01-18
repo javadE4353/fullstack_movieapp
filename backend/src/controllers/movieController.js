@@ -133,6 +133,7 @@ export const movieController = new (class MovieController {
   async getAllmovies(req, res) {
     try {
       const Movie = await db.Movies.findAll();
+      console.log(Movie)
       return responce({
         res,
         code: 200,
@@ -174,6 +175,15 @@ export const movieController = new (class MovieController {
         message: `badrequest`,
       });
     }
+
+    const movie=await db.Movies.findOne({where:{id:movieid}})
+    if (!movie) {
+      return responce({
+        res,
+        code: 400,
+        message: `badrequest`,
+      });
+    }
     if (req.body?.genre_ids && movieid) {
       try {
         const dataimg = {};
@@ -181,7 +191,7 @@ export const movieController = new (class MovieController {
           dataimg.poster_path = req.file.path.replace(/\\/g, "/").substring(6);
           req.body.poster_path = `http://localhost:7000/${dataimg.poster_path}`;
         } else {
-          req.body.poster_path = null;
+          req.body.poster_path = movie.toJSON().poster_path;
         }
         const data = {
           ...req.body,
@@ -213,11 +223,12 @@ export const movieController = new (class MovieController {
           },
           { where: { movieId: Number(movieid) } }
         );
+
         return responce({
           res,
           code: 200,
-          message: `ok : update movie${movieid}`,
-          // data: upMovie,
+          message: `ok : update movie${movie?.toJSON().title}`,
+          data: upMovie,
         });
       } catch (error) {
         return responce({
@@ -232,7 +243,7 @@ export const movieController = new (class MovieController {
         dataimg.poster_path = req.file.path.replace(/\\/g, "/").substring(6);
         req.body.poster_path = `http://localhost:7000/${dataimg.poster_path}`;
       } else {
-        req.body.poster_path = null;
+        req.body.poster_path = movie.toJSON().poster_path;
       }
       const data = {
         ...req.body,
@@ -244,10 +255,11 @@ export const movieController = new (class MovieController {
         const upMovie = await db.Movies.update(data, {
           where: { id: Number(movieid) },
         });
+
         return responce({
           res,
           code: 200,
-          message: `ok : update movie${movietitle}`,
+          message: `ok : update movie${movie?.toJSON().title}`,
           data: upMovie,
         });
       } catch (error) {

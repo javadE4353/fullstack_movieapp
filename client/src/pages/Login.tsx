@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 //
 import loginAction from "../redux/actionCreator/actionCreateAuth";
 import { Movies, StateTypeAuth, Userinfo } from "../typeing";
-import { fatchLogin } from "../features/auth/auth";
+import { fatchLogin, removeMessage } from "../features/auth/auth";
 import { useAppSelector,useAppDispatch } from "../app/hooks";
 
 //interface
@@ -62,15 +62,16 @@ function Login() {
 
   //useCallback
   const checkLogin = useCallback(() => {
-    if (auth?.errorMessage !== null && auth?.accessToken === null) {
+    if (auth?.errorMessage !== null && !auth?.accessToken) {
       setErrorMsg(auth?.errorMessage);
       settimeRef.current = setTimeout(() => {
         setErrorMsg("");
       }, 2000);
     }
-    if (auth?.errorMessage === null && auth?.accessToken !== null) {
+    if (!auth?.errorMessage  && auth?.accessToken) {
       setErrorMsg("");
       navigate("/");
+      dispatch(removeMessage())
     }
   }, [auth?.isLoading]);
 //useEffect
@@ -79,6 +80,11 @@ function Login() {
     checkLogin();
     return () => clearTimeout(settimeRef?.current as NodeJS.Timeout);
   }, [auth?.isLoading]);
+
+  //
+  useEffect(() => {
+    dispatch(removeMessage())
+  }, []);
 //
   // useEffect(() => {
   //   setMovie(banner?.[Math.floor(Math.random() * banner.length)]);
@@ -167,17 +173,6 @@ function Login() {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-          <div
-            className="relative sm:w-1/2 xl:w-3/5 bg-transparent h-full hidden md:flex flex-auto items-center justify-center p-10 overflow-hidden  text-white bg-no-repeat bg-cover relative"
-            // style={{
-            //   backgroundImage: `url(${movie?.backdrop_path || movie?.poster_path})`,
-            // }}
-          >
-            <div className="absolute opacity-25 inset-0 z-0"></div>
-            <div className="w-full  lg:max-w-2xl md:max-w-md z-10 items-center text-center ">
-              <div className=" font-bold leading-tight mb-6 mx-auto w-full content-center items-center "></div>
             </div>
           </div>
         </div>

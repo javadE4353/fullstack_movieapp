@@ -11,17 +11,17 @@ import { Movies } from "../../../typeing";
 
 interface MovieType {
   mylist: Movies[];
-  count:number
-  delete:number
-  insert:number
+  count: number;
+  delete: number;
+  insert: number;
   isloading: boolean;
 }
 
 const initialState = {
   mylist: [],
-  count:0,
-  delete:0,
-  insert:0,
+  count: 0,
+  delete: 0,
+  insert: 0,
   isloading: false,
 };
 

@@ -42,6 +42,12 @@ import {
 import getmovies, { updatemovie } from "../redux/actionCreator/actionMovie";
 import axios from "axios";
 import { BASE_URL } from "../axios/configApi";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
+import { fatchInsertRating, fatchRetings } from "../features/ratings/review";
+import {
+  fatchDeleteMylist,
+  fatchmylistInsert,
+} from "../features/mylist/mylist";
 
 //interface
 const override: CSSProperties = {
@@ -63,25 +69,36 @@ const toastStyle = {
   maxWidth: "1000px",
 };
 interface Mylist {
-  mylist: { mylist: Movies[]; isloading: boolean };
+  mylist: {
+    mylist: Movies[] 
+    count: number
+    delete: number
+    insert: number
+    isLoading: boolean
+    ErrorMessage:string
+  };
 }
 
 interface RatingsState {
-  ratings: {
+  review: {
     ratings: Ratings[];
-    isloading: boolean;
-    status: number;
+    comment: CommentType[];
+    insert: number;
+    delete: number;
+    isLoading: boolean;
+    errorMessage: string;
   };
 }
 interface MoviesType {
   movies: {
-    movie: Movies[];
+    movies: Movies[];
     Allmovie: Movies[];
     insert: number;
     update: number;
     delete: number;
-    isloading: boolean;
-    ErrorMessage: string | null;
+    count: number;
+    isLoading: boolean;
+    ErrorMessage: string;
   };
 }
 //component
@@ -106,21 +123,26 @@ function Modal() {
   const [movies, setMovies] = useState<null | Movies>(null);
   //
   // state redux
-  const stateRatings = useSelector((state: RatingsState) => state?.ratings);
-  const mylist = useSelector((state: Mylist) => state?.mylist);
-  const user = useSelector((state: StateTypeAuth) => state?.auth);
-  const allMovies = useSelector((state: MoviesType) => state?.movies?.Allmovie);
+  const stateRatings = useAppSelector((state: RatingsState) => state?.review);
+  const mylist = useAppSelector((state: Mylist) => state?.mylist);
+  const user = useAppSelector((state: StateTypeAuth) => state?.auth);
+  const allMovies = useAppSelector(
+    (state: MoviesType) => state?.movies?.Allmovie
+  );
   //
-  const dispatch: Dispatch<any> = useDispatch();
-  const {id}=useParams()
+  const dispatch = useAppDispatch();
+  const { id } = useParams();
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
 
   //
   async function fetchMovie() {
     try {
-      const data = await axiosPrivate.get(`${BASE_URL}/movies/movie?movieid=${movie?.movieid}&type=${movie?.media_type || "movie"}`);
-      console.log(data?.data?.data);
+      const data = await axiosPrivate.get(
+        `${BASE_URL}/movies/movie?movieid=${movie?.movieid}&type=${
+          movie?.media_type || "movie"
+        }`
+      );
       if (data.data?.data?.videos) {
         const index = data?.data?.data?.videos.results.findIndex(
           (element: Element) => element.type === "Trailer"
@@ -149,15 +171,14 @@ function Modal() {
     setShowMylist(!showmylist);
     toast.dismiss();
     setModal(false);
-    window.history.back()
+    window.history.back();
   };
 
   //   // Find all the movies in the user's list
   const mylistdata = useCallback(() => {
     if (user?.accessToken && user?.userInfo?.id) {
       const dublicate = mylist?.mylist?.find(
-        (item: Movies) =>
-          item.id === movie?.id 
+        (item: Movies) => item.id === movie?.id
       );
       if (dublicate !== undefined) {
         setMovies(dublicate);
@@ -171,12 +192,12 @@ function Modal() {
 
   const getRatingsAll = useCallback(() => {
     if (movie?.title) {
-      dispatch(getRatings(movie?.title, axiosPrivate));
+      dispatch(fatchRetings({ movietitle: movie.title, axiosPrivate }));
     }
   }, [movie, rated]);
 
   const handlechakRatings = useCallback(() => {
-    if (user?.userInfo?.id && stateRatings?.ratings?.length>=0) {
+    if (user?.userInfo?.id && stateRatings?.ratings?.length >= 0) {
       const dublicate = stateRatings.ratings.find((item: Ratings) => {
         if (
           item.userId === user?.userInfo?.id &&
@@ -192,7 +213,7 @@ function Modal() {
         setRated(false);
       }
     }
-  }, [movie, rated, stateRatings.status]);
+  }, [movie, rated, stateRatings.isLoading]);
 
   //   // Check if the movie is already in the user's list
 
@@ -204,7 +225,11 @@ function Modal() {
     ) {
       if (movies && user?.userInfo) {
         dispatch(
-          removeMovieMylist(axiosPrivate, user.userInfo.id, movies?.id, {})
+          fatchDeleteMylist({
+            axiosPrivate,
+            userid: user.userInfo.id,
+            movieid: movies?.id,
+          })
         );
       }
       setAddedToList(false);
@@ -216,7 +241,7 @@ function Modal() {
     } else if (movie && addedToList === false) {
       const movieAdd = { ...movie, username: user?.userInfo?.username };
       setAddedToList(true);
-      dispatch(insertmylist(movieAdd, axiosPrivate));
+      dispatch(fatchmylistInsert({ movie: movieAdd, axiosPrivate }));
       toast(`${movie?.title || movie?.original_title} به لیست شما اضافه شد`, {
         duration: 8000,
         style: toastStyle,
@@ -257,14 +282,14 @@ function Modal() {
         };
         setMovie({ ...movieItem, vote_count: Ratings?.ratings });
         dispatch(
-          insertRatings(
-            Ratings,
-            { ...movieItem, vote_count: Ratings?.ratings },
-            movie?.title,
-            movie?.id,
-            user?.userInfo?.id,
-            axiosPrivate
-          )
+          fatchInsertRating({
+            rated: Ratings,
+            data: { ...movieItem, vote_count: Ratings?.ratings },
+            movietitle: movie?.title,
+            movieid: movie?.id,
+            userid: user?.userInfo?.id,
+            axiosPrivate,
+          })
         );
         setRatings(Ratings?.ratings);
         setRated(!rated);
@@ -281,14 +306,14 @@ function Modal() {
         };
         setMovie({ ...movieItem, vote_count: Ratings?.ratings });
         dispatch(
-          insertRatings(
-            Ratings,
-            { ...movieItem, vote_count: Ratings?.ratings },
-            movie?.title,
-            movie?.id,
-            user?.userInfo?.id,
-            axiosPrivate
-          )
+          fatchInsertRating({
+            rated: Ratings,
+            data: { ...movieItem, vote_count: Ratings?.ratings },
+            movietitle: movie?.title,
+            movieid: movie?.id,
+            userid: user?.userInfo?.id,
+            axiosPrivate,
+          })
         );
         setRatings(Ratings?.ratings);
         setRated(!rated);
@@ -301,31 +326,30 @@ function Modal() {
     mylistdata();
     handlechakRatings();
   }, [movie]);
-//
+  //
   useEffect(() => {
     setModal(true);
   }, []);
   //
   useEffect(() => {
     handlechakRatings();
-  }, [stateRatings?.status]);
+  }, [stateRatings?.isLoading]);
   //
   useEffect(() => {
-   if(id){
-    const m=allMovies?.filter(item=>item.id === Number(id))
-    if(m.length>0 && m)setMovie(m[0])
-   }
+    if (id) {
+      const m = allMovies?.filter((item) => item.id === Number(id));
+      if (m.length > 0 && m) setMovie(m[0]);
+    }
   }, [id]);
-  console.log("modal")
   return (
     <>
       <MuiModal
-        open={stateRatings?.isloading}
+        open={stateRatings?.isLoading}
         className="fixed !top-7 left-0 right-0 z-50 mx-auto w-full max-w-5xl overflow-hidden overflow-y-scroll rounded-md scrollbar-hide"
       >
         <ClipLoader
           color={color}
-          loading={stateRatings?.isloading}
+          loading={stateRatings?.isLoading}
           cssOverride={override}
           size={50}
           aria-label="Loading Spinner"
@@ -352,7 +376,9 @@ function Modal() {
               {play ? (
                 <>
                   {errorMoviePlay ? (
-                    <div className="absolute inset-y-0 h-full w-full text-center text-black bg-white flex items-center justify-center">{errorMoviePlay}</div>
+                    <div className="absolute inset-y-0 h-full w-full text-center text-black bg-white flex items-center justify-center">
+                      {errorMoviePlay}
+                    </div>
                   ) : (
                     <ReactPlayer
                       url={`https://www.youtube.com/watch?v=${trailer}`}
@@ -375,16 +401,14 @@ function Modal() {
                     backgroundImage: `url(${movie?.poster_path})`,
                   }}
                 >
-                   <div
-                     className="w-[40%] absolute  h-full rounded py-4 px-4"
-                   >
-                   <div
-                    className="w-full bg-contain bg-no-repeat bg-center h-full rounded py-4 px-4"
-                    style={{
-                      backgroundImage: `url(${movie?.poster_path})`,
-                    }}
-                  ></div>
-                   </div>
+                  <div className="w-[40%] absolute  h-full rounded py-4 px-4">
+                    <div
+                      className="w-full bg-contain bg-no-repeat bg-center h-full rounded py-4 px-4"
+                      style={{
+                        backgroundImage: `url(${movie?.poster_path})`,
+                      }}
+                    ></div>
+                  </div>
                 </div>
               )}
             </>
@@ -456,7 +480,7 @@ function Modal() {
             </div>
             <div>
               <button onClick={() => setShowCament(!showCament)}>
-                   برای مشاهده نظرات کلیک کنید
+                برای مشاهده نظرات کلیک کنید
               </button>
 
               {movie && user?.userInfo && showCament ? (
@@ -471,12 +495,12 @@ function Modal() {
         </>
       </MuiModal>
       <MuiModal
-        open={mylist?.isloading}
+        open={mylist?.isLoading}
         className="fixed !top-7 left-0 right-0 z-50 mx-auto w-full max-w-5xl overflow-hidden overflow-y-scroll rounded-md scrollbar-hide"
       >
         <ClipLoader
           color={color}
-          loading={mylist?.isloading}
+          loading={mylist?.isLoading}
           cssOverride={override}
           size={50}
           aria-label="Loading Spinner"

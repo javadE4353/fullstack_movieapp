@@ -4,8 +4,6 @@ import { useState, CSSProperties, useCallback, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import ClipLoader from "react-spinners/ClipLoader";
 import { motion } from "framer-motion";
-import { useDispatch, useSelector } from "react-redux";
-import { Dispatch } from "redux";
 import MuiModal from "@mui/material/Modal";
 import { HiOutlineXMark } from "react-icons/hi2";
 import { useRecoilState } from "recoil";
@@ -17,11 +15,13 @@ import "react-datepicker/dist/react-datepicker.css";
 //
 import useAxiosPrivate from "../hook/useAxiosPrivate";
 
-import { Users, StateTypeAuth } from "../typeing";
+import { Users, StateTypeAuth, Categories, Movies } from "../typeing";
 import getCategorys, {
   getPublicCategory,
 } from "../redux/actionCreator/actionCreateCategory";
 import { insertmovie } from "../redux/actionCreator/actionMovie";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
+import { fatchInsertMovies } from "../features/movies/movies";
 
 // interface and stylecss
 const override: CSSProperties = {
@@ -74,29 +74,39 @@ interface Cat {
 }
 interface Categorys {
   categorys: {
-    categorys: Cat[];
-    categoryPublic: Cat[];
+    categorys: Categories[] ;
+    categoryPublic: Categories[] ;
     update: number;
     delete: number;
     insert: number;
-    isloading: boolean;
-    ErrorMassege: string | null;
+    count: number;
+    isLoading: boolean;
+    ErrorMassege: string;
   };
 }
 
 interface IsertComplateMovie{
-  movies:{insert:number}
+  movies:{
+    movies: Movies[] ;
+    Allmovie: Movies[] ;
+    insert: number;
+    update: number;
+    delete: number;
+    count:number 
+    isLoading: boolean;
+    ErrorMessage:string 
+  }
 }
 
 const InsertMovie = () => {
   let [color, setColor] = useState("#ffffff");
-  const categorys = useSelector(
+  const categorys = useAppSelector(
     (state: Categorys) => state?.categorys?.categoryPublic
   );
-  const user = useSelector((state: StateTypeAuth) => state?.auth);
-  const insert = useSelector((state: IsertComplateMovie) => state?.movies?.insert);
+  const user = useAppSelector((state: StateTypeAuth) => state?.auth);
+  const insert = useAppSelector((state: IsertComplateMovie) => state?.movies?.insert);
 
-  const dispatch: Dispatch<any> = useDispatch();
+  const dispatch= useAppDispatch();
   const [Errormsg, setErrormsg] = useState<string>("");
   const [startDate, setStartDate] = useState(new Date());
   const navigate = useNavigate();
@@ -127,7 +137,7 @@ const InsertMovie = () => {
     formData.append("movieid", data.movieid);
     if (data.movieid == "") formData.delete("movieid");
     if (user?.userInfo?.id) {
-      dispatch(insertmovie(axiosPrivate, formData, user?.userInfo?.id,dispatch));
+      dispatch(fatchInsertMovies({axiosPrivate,data: formData, userid:user?.userInfo?.id}));
     }
   };
 

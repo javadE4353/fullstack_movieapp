@@ -2,7 +2,6 @@ import { useEffect, useState, CSSProperties } from "react";
 
 //module external
 
-import { useSelector, useDispatch } from "react-redux";
 import { Dispatch } from "redux";
 import { useForm, SubmitHandler } from "react-hook-form";
 import * as timeago from "timeago.js/lib/index";
@@ -19,8 +18,10 @@ import {
   getComments,
   insertComment,
 } from "../redux/actionCreator/actionCreateComment";
-import { CommentType, Movies, StateTypeAuth } from "../typeing";
+import { CommentType, Movies, Ratings, StateTypeAuth } from "../typeing";
 import useAxiosPrivate from "../hook/useAxiosPrivate";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
+import { fatchComments, fatchCommentsDelete, fatchCommentsInsert } from "../features/ratings/review";
 
 //interface
 const override: CSSProperties = {
@@ -40,11 +41,13 @@ interface Props {
 }
 
 interface Comment {
-  comment: {
-    comment: CommentType[];
-    insert: number;
-    ErrorMassege: string;
+  review: {
+    ratings: Ratings[];
+    comment: CommentType[]
+    insert: number 
+    delete: number 
     isLoading: boolean;
+    errorMessage: string;
   };
 }
 
@@ -56,10 +59,10 @@ const Comments = ({ ratings, newratings, movie }: Props) => {
   //COMMENTS
   const [comments, setComments] = useState<CommentType[]>([]);
   //
-  const comment = useSelector((state: Comment) => state?.comment);
-  const user = useSelector((state: StateTypeAuth) => state?.auth);
+  const comment = useAppSelector((state: Comment) => state?.review);
+  const user = useAppSelector((state: StateTypeAuth) => state?.auth);
   //
-  const dispatch: Dispatch<any> = useDispatch();
+  const dispatch = useAppDispatch();
   const axiosPrivate = useAxiosPrivate();
   const {
     register,
@@ -79,7 +82,7 @@ const Comments = ({ ratings, newratings, movie }: Props) => {
         content: data?.textarea,
         ratings: ratings + newratings,
       };
-      dispatch(insertComment(dataComent, axiosPrivate));
+      dispatch(fatchCommentsInsert({data:dataComent, axiosPrivate}));
     }
   };
   //
@@ -95,13 +98,13 @@ const Comments = ({ ratings, newratings, movie }: Props) => {
     createdAt:any
   ) => {
     if (userid && movieid && createdAt){
-      dispatch(DeleteComment(userid, movieid, movietitle,createdAt, axiosPrivate));
+      dispatch(fatchCommentsDelete({userid, movieid, movietitle,createdAt, axiosPrivate}));
     }
   };
   //
   useEffect(() => {
     if (movie?.id) {
-      dispatch(getComments(movie?.title, movie?.id, axiosPrivate));
+      dispatch(fatchComments({movietitle:movie?.title, movieid:movie?.id, axiosPrivate}));
     }
   }, []);
   //

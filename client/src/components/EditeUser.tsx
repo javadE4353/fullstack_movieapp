@@ -1,19 +1,18 @@
 import { useState, useEffect, CSSProperties, useCallback } from "react";
 //module external
-import { Dispatch } from "redux";
 import { useForm, SubmitHandler } from "react-hook-form";
 import ClipLoader from "react-spinners/ClipLoader";
 import MoonLoader from "react-spinners/MoonLoader";
 import { motion } from "framer-motion";
-import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams} from "react-router-dom";
 import { HiOutlineXMark } from "react-icons/hi2";
 import MuiModal from "@mui/material/Modal";
 
 //
 import useAxiosPrivate from "../hook/useAxiosPrivate";
-import {updateUser } from "../redux/actionCreator/actionCreateUsers";
 import { Users, StateTypeAuth } from "../typeing";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
+import { fatchUpdateUsers } from "../features/users/users";
 
 
 //interface
@@ -34,10 +33,13 @@ const overrideupdate: CSSProperties = {
 };
 interface State {
   users: {
-    users: Users[] | null;
+    users: Users[];
+    allusres: Users[] ;
+    insert: number;
     count: number;
+    delete: number;
     update: number;
-    isloading: boolean;
+    isLoading: boolean;
     ErrorMessage: string | null;
   };
 }
@@ -64,11 +66,11 @@ const EditUser = ({path}:Props) => {
   const [Errormsg, setErrormsg] = useState<string>("");
   const [user, setuser] = useState<Users[]>([]);
   //state user
-  const stateUsers = useSelector((state: State) => state?.users);
-  const auth = useSelector((state: StateTypeAuth) => state?.auth);
+  const stateUsers = useAppSelector((state: State) => state?.users);
+  const auth = useAppSelector((state: StateTypeAuth) => state?.auth);
   //
   const {id} =useParams()
-  const dispatch: Dispatch<any> = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
   const {
@@ -80,7 +82,7 @@ const EditUser = ({path}:Props) => {
 //handlecloseModal
   const handleClose = () => {
     setShowModal(false);
-    navigate(`/dashboard/${path}`);
+    window.history.back()
   };
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
@@ -116,23 +118,23 @@ const EditUser = ({path}:Props) => {
       );
       if(data.roleuser == "") formData.delete("roleuser");
       if (id !== null && user ) {
-        dispatch(updateUser(axiosPrivate, formData, Number(id)));
+        dispatch(fatchUpdateUsers({axiosPrivate, data:formData,id: Number(id)}));
       }
     }
   };
 //
   const handleupdate = useCallback(() => {
-      if (stateUsers?.update === 1 && id !== null) {
-         navigate(`/dashboard/${path}`);
+      if (stateUsers?.update === 200 && id !== null) {
+         window.history.back();
       }
   }, [stateUsers?.update]);
   //
   useEffect(() => {
-    if (id !== null && stateUsers?.users) {
-      const user=stateUsers.users.filter(U =>U.id === Number(id))
+ if (id !== null && stateUsers?.allusres ) {
+      const user=stateUsers?.allusres?.filter(U =>U.id == Number(id))
       setuser(user || [])
+      setShowModal(true)
     }
-    setShowModal(true)
   }, []);
   //
   useEffect(() => {
@@ -141,12 +143,12 @@ const EditUser = ({path}:Props) => {
   return (
     <>
       <MuiModal
-        open={stateUsers?.isloading}
+        open={stateUsers?.isLoading}
         className="fixed !top-7 left-0 right-0 z-50 mx-auto w-full max-w-5xl overflow-hidden overflow-y-scroll rounded-md scrollbar-hide"
       >
         <ClipLoader
           color={color}
-          loading={stateUsers?.isloading}
+          loading={stateUsers?.isLoading}
           cssOverride={override}
           size={50}
           aria-label="Loading Spinner"

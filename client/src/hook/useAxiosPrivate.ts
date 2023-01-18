@@ -1,20 +1,13 @@
 import { axiosPrivate } from "../axios/configApi";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "../app/hooks";
 import useRefreshToken from "./useRefreshToken";
-import { Userinfo } from "../typeing";
+import { StateTypeAuth } from "../typeing";
 
-interface StateTypeAuth {
-  auth: {
-    accessToken: string | null | undefined;
-    userInfo: Userinfo | null;
-    isLoading: boolean;
-    erroMessage: null;
-  };
-}
+
 
 const useAxiosPrivate = () => {
-  const user = useSelector((state: StateTypeAuth) => state?.auth?.accessToken);
+  const user = useAppSelector((state: StateTypeAuth) => state.auth.accessToken);
   const refresh = useRefreshToken();
   useEffect(() => {
     const requestIntercept = axiosPrivate.interceptors.request.use(
@@ -35,6 +28,7 @@ const useAxiosPrivate = () => {
         if (error?.response?.status === 403  && !prevRequest?.sent) {
           prevRequest.sent = true;
           const newAccessToken = await refresh();
+          console.log(newAccessToken)
           // prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
           prevRequest.headers={
             ...prevRequest.headers,

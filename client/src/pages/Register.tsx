@@ -2,12 +2,11 @@ import { useState, CSSProperties } from "react";
 
 //module external
 import { useForm, SubmitHandler } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import { motion } from "framer-motion";
 
 //
-import { axiospublic, BASE_URL } from "../axios/configApi";
 import { useAppSelector,useAppDispatch } from "../app/hooks";
 import { fatchRegister } from "../features/auth/auth";
 import { StateTypeAuth } from "../typeing";
@@ -28,10 +27,6 @@ interface Inputs {
 //component
 function Register() {
   let [color, setColor] = useState("#ffffff");
-  const [login, setLogin] = useState(false);
-  const [isloading, setIsloading] = useState(false);
-  const [Errormsg, setErrormsg] = useState<string>("");
-  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -41,36 +36,10 @@ function Register() {
 
   //stateRedux
   const auth = useAppSelector((state:StateTypeAuth) => state.auth);
-console.log(auth)
-  //
   const dispatch= useAppDispatch();
-
-
 
   //fatchRegister
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    // try {
-    //   if (!Errormsg) {
-    //     setIsloading(true);
-    //     const res = await axiospublic.post<Inputs>(`/auth/regeister`, data);
-    //     setIsloading(false);
-    //     navigate("/login");
-    //   }
-    // } catch (error: any) {
-    //   console.log(error?.response)
-    //   let ErrorMessage = "";
-    //   if (error?.response?.status === 401) {
-    //     ErrorMessage = " اطلاعات وارد شده صحیح نمیباشد";
-    //   }
-    //   if (error?.response?.status === 409) {
-    //     ErrorMessage = "نام کاربری وجود دارد";
-    //   }
-    //   if (error?.response?.status !== 409 && error?.response?.status !== 401) {
-    //     ErrorMessage = " لطفا بعدا دوباره امتحان کنید";
-    //   }
-    //   setIsloading(false);
-    //   setErrormsg(ErrorMessage);
-    // }
     dispatch(fatchRegister(data))
   };
 
@@ -178,7 +147,6 @@ console.log(auth)
                       ) : (
                         <button
                           className="border border-indigo-600  text-white rounded-lg py-3 font-semibold"
-                          onClick={() => setErrormsg("")}
                           type="submit"
                         >
                           ثبت نام
@@ -203,7 +171,9 @@ console.log(auth)
           </div>
         </div>
       </div>
+      {auth?.message && <Navigate to="/login" />}
     </motion.div>
+    
   );
 }
 

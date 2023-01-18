@@ -2,12 +2,12 @@ import { useState } from "react";
 
 //module external
 import { useRecoilState } from "recoil";
-import { useSelector } from "react-redux";
 
 //
 import { Movies, StateTypeAuth } from "../typeing";
 import { showAlert } from "../atoms/modalAtom";
 import { Link, useLocation } from "react-router-dom";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
 
 //interface
 interface Props {
@@ -18,7 +18,7 @@ interface Props {
 const Card = ({ movie }: Props) => {
 
   const [showalret, setShowAlert] = useRecoilState(showAlert);
-  const user = useSelector((state: StateTypeAuth) => state?.auth);
+  const user = useAppSelector((state: StateTypeAuth) => state?.auth);
   const [errorShowMovie, setErrorShowMovie] = useState<string>("");
  const loc =useLocation()
   const handleShowMovie = () => {

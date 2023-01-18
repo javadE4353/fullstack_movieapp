@@ -3,8 +3,6 @@ import { useState, CSSProperties } from "react";
 //module external
 import { useForm, SubmitHandler } from "react-hook-form";
 import ClipLoader from "react-spinners/ClipLoader";
-import { useDispatch, useSelector } from "react-redux";
-import { Dispatch } from "redux";
 import useAxiosPrivate from "../hook/useAxiosPrivate";
 import MuiModal from "@mui/material/Modal";
 import { HiXMark, HiOutlineXMark } from "react-icons/hi2";
@@ -26,6 +24,7 @@ import {
 } from "../redux/actionCreator/actionCreateUsers";
 import { Users, Userinfo, Payment, StateTypeAuth } from "../typeing";
 import { insertSubscription } from "../redux/actionCreator/actionCreatePayment";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
 
 //interface
 const override: CSSProperties = {
@@ -70,8 +69,8 @@ const FormPay = ({ data }: Props) => {
   const [ShowmodalAccount, setShowmodalAccount] = useRecoilState(modalAccount);
   const [payaccount, setpayAccount] = useRecoilState(payAccount);
 
-  const dispatch: Dispatch<any> = useDispatch();
-  const user = useSelector((state: StateTypeAuth) => state?.auth);
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state: StateTypeAuth) => state?.auth);
   const axiosPrivate = useAxiosPrivate();
   const {
     register,

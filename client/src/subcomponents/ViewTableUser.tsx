@@ -18,6 +18,7 @@ import MuiModal from "@mui/material/Modal";
 import MoonLoader from "react-spinners/MoonLoader";
 import { Link, Outlet } from "react-router-dom";
 //
+import { useAppSelector, useAppDispatch } from "../app/hooks";
 import { pageinationAtom } from "../atoms/modalAtom";
 import useAxiosPrivate from "../hook/useAxiosPrivate";
 import { deleteUser, getUsers } from "../redux/actionCreator/actionCreateUsers";
@@ -26,6 +27,7 @@ import Pageination from "./Pagination";
 import { head } from "../data/tableViewUsers";
 import { BASE_URL } from "../axios/configApi";
 import { filterRow } from "../data/filter";
+import { fatchAllUsers, fatchDeleteUsers, fatchUsers, restartDefault } from "../features/users/users";
 
 //interface
 
@@ -72,9 +74,13 @@ const menuVariantsSectionFillter = {
 };
 interface State {
   users: {
-    users: Users[] | null;
+    users: Users[];
+    allusres: Users[] ;
+    insert: number;
     count: number;
-    isloading: boolean;
+    delete: number;
+    update: number;
+    isLoading: boolean;
     ErrorMessage: string | null;
   };
 }
@@ -83,10 +89,10 @@ const ViewTableUser = () => {
   //pageination
   const [pageinationatom, setPageinationAtom] = useRecoilState(pageinationAtom);
   //stateUsers
-  const user = useSelector((state: StateTypeAuth) => state?.auth);
-  const stateUsers = useSelector((state: State) => state?.users);
+  const user = useAppSelector((state: StateTypeAuth) => state?.auth);
+  const stateUsers = useAppSelector((state: State) => state?.users);
   //save users & id__user
-  const [users, setusers] = useState<Users[] | null>();
+  const [users, setusers] = useState<Users[]>([]);
   const [count, setCount] = useState<number>(0);
   // state fillter
   const [filterow, setfilterRow] = useState<any>(3);
@@ -102,13 +108,13 @@ const ViewTableUser = () => {
   const [UsersRole, setUsersByRole] = useState<FilterUserByRole[]>([]);
   //
   const axiosPrivate = useAxiosPrivate();
-  const dispatch: Dispatch<any> = useDispatch();
+  const dispatch = useAppDispatch();
 
   //
   // search category
   const searchCategory = (search: string) => {
     if (search) {
-      dispatch(getUsers(axiosPrivate, { search }));
+      dispatch(fatchUsers({ axiosPrivate, search }));
     } else {
     }
   };
@@ -117,7 +123,8 @@ const ViewTableUser = () => {
   const handleUserByRole = useCallback(() => {
     if (filterUsersByRole) {
       dispatch(
-        getUsers(axiosPrivate, {
+        fatchUsers({
+          axiosPrivate,
           page: pageinationatom,
           pageSize: filterow,
           role: filterUsersByRole,
@@ -130,10 +137,7 @@ const ViewTableUser = () => {
   const handlePageintaion = useCallback(() => {
     if (!filterUsersByRole) {
       dispatch(
-        getUsers(axiosPrivate, {
-          page: pageinationatom,
-          pageSize: filterow,
-        })
+        fatchUsers({ axiosPrivate, page: pageinationatom, pageSize: filterow })
       );
     }
   }, [pageinationatom, filterow]);
@@ -142,7 +146,12 @@ const ViewTableUser = () => {
   const handleDeleteUser = (id: number) => {
     if (id && user?.userInfo?.id)
       dispatch(
-        deleteUser(axiosPrivate, user?.userInfo?.id, pageinationatom, filterow)
+        fatchDeleteUsers({
+          axiosPrivate,
+          id,
+          page: pageinationatom,
+          pageSize: filterow,
+        })
       );
   };
   //
@@ -163,12 +172,16 @@ const ViewTableUser = () => {
   //  Back to default when entering the page
   useEffect(() => {
     countUsers();
-    dispatch(getUsers(axiosPrivate, { page: 1, pageSize: filterow }));
+    dispatch(fatchUsers({ axiosPrivate, page: 1, pageSize: filterow }));
+    dispatch(fatchAllUsers({ axiosPrivate }));
+    dispatch(restartDefault())
   }, []);
   // update state movies and countMovies
   useEffect(() => {
-    stateUsers?.users && setusers(stateUsers.users);
-    if (stateUsers?.count >= 0) setCount(stateUsers?.count);
+    if(stateUsers?.users){
+      stateUsers?.users && setusers(stateUsers.users);
+      if (stateUsers?.count >= 0) setCount(stateUsers?.count);
+    }
   }, [stateUsers.users, stateUsers.count]);
 
   //reast pageination
@@ -176,6 +189,7 @@ const ViewTableUser = () => {
     setPageinationAtom(1);
   }, [toggleSidebarFilterM]);
   //
+  console.log(stateUsers?.users)
   return (
     <>
       <motion.div
@@ -185,12 +199,12 @@ const ViewTableUser = () => {
         // exit={{ opacity: 0, transition: { duration: 0.1 } }}
       >
         <MuiModal
-          open={stateUsers?.isloading ? true : false}
+          open={stateUsers?.isLoading ? true : false}
           className="fixed top-7 left-0 right-0 z-50 mx-auto w-full max-w-5xl overflow-hidden overflow-y-scroll rounded-md scrollbar-hide"
         >
           <MoonLoader
             color={"#36d7b7"}
-            loading={stateUsers?.isloading ? true : false}
+            loading={stateUsers?.isLoading ? true : false}
             cssOverride={overrideupdate}
             size={50}
             aria-label="Loading Spinner"
@@ -487,7 +501,7 @@ const ViewTableUser = () => {
                   </td>
                   <td className="border border-slate-300 py-4 px-6">
                     <div className="flex items-center">
-                      {item?.roles?.[0]?.name}
+                      {item?.roles?.[0]?.name =="admin"?"مدیر":item?.roles?.[0]?.name =="user"?"کاربر":""}
                     </div>
                   </td>
                   <td className="border border-slate-300 py-4 px-6">

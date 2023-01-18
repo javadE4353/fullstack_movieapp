@@ -3,10 +3,8 @@ import { useState, useEffect, useCallback, CSSProperties } from "react";
 //module external
 import { motion, AnimatePresence } from "framer-motion";
 import { useRecoilState } from "recoil";
-import { Dispatch } from "redux";
 import * as timeago from "timeago.js/lib/index";
 import { HiPencil, HiMinus, HiPlus } from "react-icons/hi2";
-import { useSelector, useDispatch } from "react-redux";
 import { BsX } from "react-icons/bs";
 import MuiModal from "@mui/material/Modal";
 import MoonLoader from "react-spinners/MoonLoader";
@@ -20,20 +18,16 @@ import {
 
 //
 import { pageinationAtom } from "../atoms/modalAtom";
-
 import useAxiosPrivate from "../hook/useAxiosPrivate";
-
-import { StateTypeAuth, Movies } from "../typeing";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
+import { StateTypeAuth, Movies, Categories } from "../typeing";
 import Pageination from "../subcomponents/Pagination";
 import { tableMovies } from "../data/dataTableMovies";
 import { useNavigate } from "react-router-dom";
 import  { BASE_URL } from "../axios/configApi";
 import { filterRow } from "../data/filter";
 import { getPublicCategory } from "../redux/actionCreator/actionCreateCategory";
-import {
-  getAllmylist,
-  removeMovieMylist,
-} from "../redux/actionCreator/actionCreateMylist";
+import { fatchDeleteMylist, fatchmylist } from "../features/mylist/mylist";
 
 //interface
 
@@ -52,13 +46,14 @@ interface Cat {
 }
 interface Categorys {
   categorys: {
-    categorys: Cat[];
-    categoryPublic: Cat[];
+    categorys: Categories[] ;
+    categoryPublic: Categories[] ;
     update: number;
     delete: number;
     insert: number;
-    isloading: boolean;
-    ErrorMassege: string | null;
+    count: number;
+    isLoading: boolean;
+    ErrorMassege: string;
   };
 }
 interface User {
@@ -92,10 +87,12 @@ const menuVariantsSectionFillter = {
 //interface
 interface Mylist {
   mylist: {
-    mylist: Movies[];
-    count: number;
-    delete: number;
-    isloading: boolean;
+    mylist: Movies[] 
+    count: number
+    delete: number
+    insert: number
+    isLoading: boolean
+    ErrorMessage:string
   };
 }
 const TableMovieMylist = () => {
@@ -115,20 +112,18 @@ const TableMovieMylist = () => {
   const [toggleSidebarFilterM, setToggleSidebarFilterM] =
     useState<boolean>(false);
   // state movies and categorys
-  const user = useSelector((state: StateTypeAuth) => state?.auth);
-  const categorys = useSelector(
-    (state: Categorys) => state?.categorys?.categoryPublic
-  );
-  const Mylist = useSelector((state: Mylist) => state?.mylist);
+  const user = useAppSelector((state: StateTypeAuth)=> state.auth);
+  const categorys = useAppSelector((state: Categorys) => state?.categorys?.categoryPublic);
+  const Mylist = useAppSelector((state: Mylist) => state?.mylist);
   //
-  const dispatch: Dispatch<any> = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
 
   //Filter control based on video creator
   const handleSearchMovie = (value: string) => {
     if (value && user?.userInfo) {
-      dispatch(getAllmylist(axiosPrivate, user.userInfo.id, { search: value }));
+      dispatch(fatchmylist({axiosPrivate,userid:user.userInfo.id, search: value }));
     }
   };
 
@@ -136,7 +131,7 @@ const TableMovieMylist = () => {
   const handleCategorysFilter = useCallback(() => {
     if (filterCategory && user.userInfo) {
       dispatch(
-        getAllmylist(axiosPrivate, user.userInfo.id, {
+        fatchmylist({axiosPrivate, userid:user.userInfo.id,
           category: filterCategory,
           page: pageinationatom,
           pageSize: filterow,
@@ -148,7 +143,7 @@ const TableMovieMylist = () => {
   const handlePageintaion = useCallback(() => {
     if (!filterCategory && user.userInfo) {
       dispatch(
-        getAllmylist(axiosPrivate, user.userInfo.id, {
+        fatchmylist({axiosPrivate, userid:user.userInfo.id,
           page: pageinationatom,
           pageSize: filterow,
         })
@@ -165,9 +160,12 @@ const TableMovieMylist = () => {
   //Delete the video.Based on ID and movie name
 
   const handleDeleteUser = (id: number) => {
-    if (user?.userInfo && id)
+    if (user?.userInfo?.id && id)
       dispatch(
-        removeMovieMylist(axiosPrivate, user.userInfo.id, id, {
+        fatchDeleteMylist({
+          axiosPrivate,
+          userid: user.userInfo.id,
+          movieid:id,
           page: pageinationatom,
           pageSize: filterow,
         })
@@ -189,7 +187,7 @@ const TableMovieMylist = () => {
     if (user.userInfo) {
       countMovie();
       dispatch(
-        getAllmylist(axiosPrivate, user.userInfo.id, {
+        fatchmylist({axiosPrivate, userid:user.userInfo.id,
           page: 1,
           pageSize: filterow,
         })
@@ -209,12 +207,12 @@ const TableMovieMylist = () => {
   return (
     <>
       <MuiModal
-        open={Mylist?.isloading ? true : false}
+        open={Mylist?.isLoading ? true : false}
         className="fixed top-7 left-0 right-0 z-50 mx-auto w-full max-w-5xl overflow-hidden overflow-y-scroll rounded-md scrollbar-hide"
       >
         <MoonLoader
           color={"#36d7b7"}
-          loading={Mylist?.isloading ? true : false}
+          loading={Mylist?.isLoading ? true : false}
           cssOverride={overrideupdate}
           size={50}
           aria-label="Loading Spinner"

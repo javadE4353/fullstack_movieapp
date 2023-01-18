@@ -95,7 +95,7 @@ export const authController = new (class AuthController {
       responce({
         res,
         code: 201,
-        message: `create user ${username}`,
+        message: ` ثبت نام  با موفقیت انجام شد ${username}`,
         data: newUser,
       });
     } catch (error) {

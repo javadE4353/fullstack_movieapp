@@ -17,7 +17,6 @@ export const mylistController = new (class MylistController {
         data: error.array(),
       });
     }
-
     const user = await db.user.findOne({
       where: { username: req.body.username },
     });
@@ -87,8 +86,8 @@ export const mylistController = new (class MylistController {
     } catch (error) {
       return responce({
         res,
-        code: 200,
-        message: "ok",
+        code: 500,
+        message: "Request Blocked",
         data: newList,
       });
     }

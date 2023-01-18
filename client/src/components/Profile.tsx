@@ -1,52 +1,55 @@
-import {useEffect, useState} from "react"
+import { useEffect, useState } from "react";
 
 //module external
-import { useSelector } from "react-redux";
-import { useRecoilState } from "recoil";
-import { modalEditUser } from "../atoms/modalAtom";
 import { HiEllipsisVertical } from "react-icons/hi2";
 import { motion } from "framer-motion";
 import * as timeago from "timeago.js/lib/index";
-import {Link, Outlet} from 'react-router-dom'
+import { Link, Outlet } from "react-router-dom";
 //
 import { StateTypeAuth, Users } from "../typeing";
-import { useDispatch } from "react-redux";
-import { Dispatch } from "redux";
 import useAxiosPrivate from "../hook/useAxiosPrivate";
-import {getUsers } from "../redux/actionCreator/actionCreateUsers";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
+import { fatchAllUsers, fatchUsers } from "../features/users/users";
 
 //interface
 interface State {
   users: {
     users: Users[];
-    count: number;
+    allusres: Users[] ;
     insert: number;
-    isloading: boolean;
+    count: number;
+    delete: number;
+    update: number;
+    isLoading: boolean;
     ErrorMessage: string | null;
   };
 }
 
 //component
 const Profile = () => {
-  const user = useSelector((state: StateTypeAuth) => state?.auth);
-  const stateUsers = useSelector((state: State) => state?.users);
-  const [users,setUser]=useState<Users[]>([])
-  const dispatch: Dispatch<any> = useDispatch();
+  const user = useAppSelector((state: StateTypeAuth) => state?.auth);
+  const stateUsers = useAppSelector((state: State) => state?.users);
+  const [users, setUser] = useState<Users[]>([]);
+  const dispatch = useAppDispatch();
   const axiosPrivate = useAxiosPrivate();
   useEffect(() => {
-      if(user?.userInfo?.id){
-        dispatch(getUsers(axiosPrivate,{}));
-      }
-  }, [])
-  useEffect(() => {
-  if(stateUsers?.users && user?.userInfo){
-    const USER=stateUsers?.users.filter(U => U.id == user?.userInfo?.id)
-    setUser(USER || [])
-  }
-  }, [stateUsers?.users])
+    if(user?.userInfo){
+      dispatch(fatchAllUsers({ axiosPrivate }));
+    }
+  }, []);
+
+  //
+  useEffect(()=> {
+ if (stateUsers?.allusres && user?.userInfo) {
+      const USER = stateUsers?.allusres.filter((U) => U.id == user?.userInfo?.id);
+      setUser(USER || []);
+    }
+  }, [stateUsers?.users]);
+
+  //return
   return (
     <motion.div
-      initial={{ opacity: 0,}}
+      initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { duration: 0.2 } }}
       exit={{ opacity: 0, transition: { duration: 0.1 } }}
     >
@@ -54,13 +57,13 @@ const Profile = () => {
         <section className="w-64 mx-auto bg-[#20354b] rounded-2xl px-8 py-6 shadow-lg">
           <div className="flex items-center justify-between">
             <span className="text-gray-400 text-sm">
-
-               <span>{timeago?.format(users[0]?.createdAt || "2022-10-25")}</span>
+              <span>
+                {timeago?.format(users[0]?.createdAt || "2022-10-25")}
+              </span>
             </span>
             <Link
-             to={`edit/${user?.userInfo?.id}`}
+              to={`edit/${user?.userInfo?.id}`}
               className="text-emerald-400"
-             
             >
               <HiEllipsisVertical size={25} />
             </Link>
@@ -72,7 +75,7 @@ const Profile = () => {
                 "https://api.lorem.space/image/face?w=120&h=120&hash=bart89fe"
               }
               className="rounded-full w-28 "
-              alt="profile picture"
+              alt={user?.userInfo?.username}
             />
           </div>
 
@@ -82,23 +85,18 @@ const Profile = () => {
             </h2>
           </div>
           <p className="text-emerald-400 font-semibold mt-2.5">
-            {user?.userInfo?.role}
+            {user?.userInfo?.role && user.userInfo.role == "admin"?"مدیر":user?.userInfo?.role == "user"?"کاربر":""}
           </p>
-
-           {/* <div className="h-1 w-full bg-black mt-8 rounded-full">
-            <div className="h-1 rounded-full w-2/5 bg-yellow-500 "></div>
-          </div> */}
-          {
-            timeago.format(users[0]?.updatedAt || "").includes("just")?
-          <div className="mt-3 text-white text-sm text-center">
-            <span className="text-gray-400 font-semibold">ویرایش انجام شد</span>
-          </div> 
-            :
-            null
-          }
+          {timeago.format(users[0]?.updatedAt || "").includes("just") ? (
+            <div className="mt-3 text-white text-sm text-center">
+              <span className="text-gray-400 font-semibold">
+                ویرایش انجام شد
+              </span>
+            </div>
+          ) : null}
         </section>
       </section>
-      <Outlet/>
+      <Outlet />
     </motion.div>
   );
 };

@@ -5,8 +5,6 @@ import { useState,CSSProperties,useCallback ,useEffect} from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import ClipLoader from "react-spinners/ClipLoader";
 import { motion } from "framer-motion";
-import { useDispatch, useSelector } from "react-redux";
-import { Dispatch } from "redux";
 import MuiModal from "@mui/material/Modal";
 import { HiOutlineXMark } from "react-icons/hi2";
 import { useNavigate, useParams } from "react-router-dom";
@@ -15,8 +13,10 @@ import MoonLoader from "react-spinners/MoonLoader";
 
 //
 import useAxiosPrivate from "../hook/useAxiosPrivate";
-import { Users,StateTypeAuth } from "../typeing";
+import { Users,StateTypeAuth, Categories } from "../typeing";
 import {updateCategory } from "../redux/actionCreator/actionCreateCategory";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
+import { fatchUpdateCategory } from "../features/categorys/category";
 
 // interface and stylecss
 const override: CSSProperties = {
@@ -51,14 +51,14 @@ interface Cat {
 }
 interface Categorys {
   categorys: {
-    categorys: Cat[];
-    categoryPublic: Cat[];
+    categorys: Categories[];
+    categoryPublic: Categories[];
     count: number;
     update: number;
     delete: number;
     insert: number;
-    isloading: boolean;
-    ErrorMassege: string | null;
+    isLoading: boolean;
+    ErrorMassege: string ;
   };
 }
 //component
@@ -69,11 +69,11 @@ const UpdateCategoryModal = () => {
 
   //
   const [showModalInsertCategory, setShowModalInsertCategory] =useState<boolean>(false);
-  const user = useSelector((state: StateTypeAuth) => state?.auth);
-  const categorys = useSelector((state: Categorys) => state?.categorys);
+  const user = useAppSelector((state: StateTypeAuth) => state?.auth);
+  const categorys = useAppSelector((state: Categorys) => state?.categorys);
 
   //
-  const dispatch: Dispatch<any> = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
   const{id}=useParams()
@@ -101,10 +101,9 @@ const UpdateCategoryModal = () => {
     if(data.content =="")formData.delete("content")
     if(id)formData.append("bits",id);
     if(user?.userInfo?.id && id){
-    dispatch(updateCategory(axiosPrivate,formData,user?.userInfo?.id,Number(id),dispatch));
+    dispatch(fatchUpdateCategory({axiosPrivate,data:formData,userid:user?.userInfo?.id,bits:Number(id)}));
     }
   };
-  console.log(categorys.update)
   // change state showmodal
   useEffect(() => {
     setShowModalInsertCategory(true)
@@ -126,12 +125,12 @@ const UpdateCategoryModal = () => {
         />
       </MuiModal>
       <MuiModal
-        open={categorys.isloading?true:false}
+        open={categorys.isLoading?true:false}
         className="fixed !top-7 left-0 right-0 z-50 mx-auto w-full max-w-5xl overflow-hidden overflow-y-scroll rounded-md scrollbar-hide"
       >
         <MoonLoader
           color={"#36d7b7"}
-          loading={categorys.isloading?true:false}
+          loading={categorys.isLoading?true:false}
           cssOverride={overrideupdate}
           size={50}
           aria-label="Loading Spinner"

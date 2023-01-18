@@ -1,12 +1,13 @@
 //module external
 import { useRecoilState } from "recoil";
 import { Outlet } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { BsX } from "react-icons/bs";
 
 //
 import { showAlert } from "../atoms/modalAtom";
 import Card from "../subcomponents/Card";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
+
 //type
 import { Movies, StateTypeAuth } from "../typeing";
 
@@ -20,7 +21,7 @@ function Category({ movie, gener }: Props) {
   const [showalret, setShowAlert] = useRecoilState(showAlert);
 
   //accessToken
-  const accesstoken = useSelector((state: StateTypeAuth) => state?.auth);
+  const accesstoken = useAppSelector((state: StateTypeAuth) => state?.auth);
 
   return (
     <>

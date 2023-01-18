@@ -5,12 +5,14 @@ import { useRecoilState } from "recoil";
 import { FaPlay } from "react-icons/fa";
 import { HiOutlineInformationCircle } from "react-icons/hi";
 import { BsX } from "react-icons/bs";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
+import { ToastContainer, toast } from 'react-toastify';
+import {LazyLoadImage} from "react-lazy-load-image-component"
+import 'react-lazy-load-image-component/src/effects/blur.css';
 //
 import { showAlert } from "../atoms/modalAtom";
 import { Movies, StateTypeAuth } from "../typeing";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
 
 //interface
 interface Props {
@@ -18,47 +20,36 @@ interface Props {
 }
 
 const SliderItemHome = ({ item }: Props) => {
-  const [errorShowMovie, setErrorShowMovie] = useState<string>("");
-  const user = useSelector((state: StateTypeAuth) => state?.auth);
+  const user = useAppSelector((state: StateTypeAuth) => state?.auth);
   const navigate = useNavigate();
 
   const [showalret, setShowAlert] = useRecoilState(showAlert);
   const handleShowMovie = (id: number | null) => {
     if (user?.userInfo?.username && id) {
-      setErrorShowMovie("");
-      setShowAlert(false);
       navigate(`/movie/${id}`);
     } else {
-      setErrorShowMovie(
-        "برای مشاهده فیلم باید اشتراک داشته باشید یا در سایت ثبت نام کنید"
-      );
-      setShowAlert(true);
+      toast("برای مشاهده فیلم در سایت ثبت نام کنید", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        });
     }
   };
   return (
     <>
-      <div
-        className={`fixed top-0 z-[999] bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative ${
-          showalret ? "block" : "hidden"
-        }`}
-      >
-        <strong className="font-bold">اشتراک!</strong>
-        <span className="block sm:inline">{errorShowMovie}</span>
-        <span
-          className="absolute top-0 bottom-0 left-0 px-4 py-3"
-          onClick={() => setShowAlert(false)}
-        >
-          <BsX size={25} />
-        </span>
-      </div>
-
-      <div className="flex flex-col space-y-2 py-16 md:space-y-4 lg:h-[65vh] lg:justify-end lg:pb-12">
+       <div className="flex flex-col space-y-2 py-16 md:space-y-4 lg:h-[100vh] lg:justify-end lg:pb-12">
         <div className="absolute top-0 left-0 -z-10 h-[95vh] w-screen">
           {item && (
-            <img
-              src={`${item?.poster_path}`}
-              className="object-cover w-full"
-              alt={item?.title}
+            <LazyLoadImage
+            src={`${item?.poster_path}`}
+            className="object-cover w-full"
+            placeholderSrc={`${item?.title}`}
+            effect="blur"
             />
           )}
         </div>
@@ -70,7 +61,7 @@ const SliderItemHome = ({ item }: Props) => {
             {item?.overview.slice(0, 100)}
           </p>
 
-          <div className="flex space-x-3 pr-3">
+          <div className="flex space-x-3 pr-3 my-4">
             <button
               className="ml-2 bannerButton bg-transparent text-white border border-red-500 rounded-md"
               onClick={() => handleShowMovie(item?.id ? item?.id : null)}
@@ -80,7 +71,7 @@ const SliderItemHome = ({ item }: Props) => {
             </button>
 
             <button
-              className="mr-4 bannerButton bg-transparent border border-red-500 rounded-md "
+              className="mr-4 bannerButton bg-[#e1e1e1] border border-[#e1e1e1] rounded-md "
               onClick={() => handleShowMovie(item?.id ? item?.id : null)}
             >
               <HiOutlineInformationCircle className="h-5 w-5 md:h-8 md:w-8" />

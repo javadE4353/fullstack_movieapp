@@ -72,11 +72,12 @@ export const updateUser = async function (req, res) {
       const updatedRows = await db.user.update(req.body, {
         where: { id: req.params.id },
       });
+      const user=await db.user.findOne({where:{id:req.params.id}})
       return responce({
         res,
         message: "edited",
         code: 200,
-        data: updatedRows,
+        data: user,
       });
     } catch (err) {
       return responce({
@@ -102,11 +103,13 @@ export const deleteuser = async function (req, res) {
     const deleteuser = await db.user.destroy({
       where: { id: req.params.id },
     });
+    const user=await db.user.findOne({where:{id:req.params.id}})
+
     responce({
       res,
       code: 200,
       message: `User deleted`,
-      data: deleteuser,
+      data: user,
     });
   } catch (err) {
     responce({
@@ -146,42 +149,50 @@ export const createUser = async function (req, res) {
     data.image = req.file.path.replace(/\\/g, "/").substring(6);
     req.body.image = `http://127.0.0.1:7000${data.image}`;
   } else {
-    req.body.image = user.image;
+    req.body.image = null;
   }
-  const newUser = await db.user.create(
-    {
-      username: req.body.username,
-      mobile: req.body.mobile,
-      email: req.body.email,
-      image: req.body.image,
-      password: req.body.password,
-      roleuser: req.body.roleuser ? req.body.roleuser : "user",
-      role: [{}],
-    },
-    {
-      include: db.Role,
+  try{
+    const newUser = await db.user.create(
+      {
+        username: req.body.username,
+        mobile: req.body.mobile,
+        email: req.body.email,
+        image: req.body.image,
+        password: req.body.password,
+        roleuser: req.body.roleuser ? req.body.roleuser : "user",
+        role: [{}],
+      },
+      {
+        include: db.Role,
+      }
+    );
+    // check roles
+    if (db.ROLES.includes(req.body.roleuser)) {
+      const Role = await db.Role.findOne({ where: { name: req.body.roleuser } });
+      await db.RoleHasUser.create({
+        roleId: Role.toJSON().id,
+        userId: newUser.toJSON().id,
+      });
+    } else {
+      const Role = await db.Role.findOne({ where: { name: db.ROLES[1] } });
+      await db.RoleHasUser.create({
+        roleId: Role.toJSON().id,
+        userId: newUser.toJSON().id,
+      });
     }
-  );
-  // check roles
-  if (db.ROLES.includes(req.body.roleuser)) {
-    const Role = await db.Role.findOne({ where: { name: req.body.roleuser } });
-    await db.RoleHasUser.create({
-      roleId: Role.toJSON().id,
-      userId: newUser.toJSON().id,
+    responce({
+      res,
+      code: 201,
+      message: `create user ${req.body.username}`,
+      data: newUser,
     });
-  } else {
-    const Role = await db.Role.findOne({ where: { name: db.ROLES[1] } });
-    await db.RoleHasUser.create({
-      roleId: Role.toJSON().id,
-      userId: newUser.toJSON().id,
+  }catch(error){
+    responce({
+      res,
+      code: 500,
+      message: `Request Blocked`,
     });
   }
-  responce({
-    res,
-    code: 201,
-    message: `create user ${req.body.username}`,
-    data: [1],
-  });
 };
 
 //getUser

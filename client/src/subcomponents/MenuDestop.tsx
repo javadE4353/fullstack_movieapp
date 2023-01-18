@@ -1,15 +1,15 @@
 //module external
 import { HiMenuAlt3 } from "react-icons/hi";
-import { actionopensidebar } from "../redux/actionCreator/actionCreateSidebar";
-import { useDispatch, useSelector } from "react-redux";
 import { Dispatch } from "redux";
 import { Link, useNavigate } from "react-router-dom";
 
 //
+import { useAppSelector,useAppDispatch } from "../app/hooks";
 import { StateTypeAuth } from "../typeing";
 import { axiospublic } from "../axios/configApi";
 import { actionLogout } from "../redux/actionCreator/actionCreateAuth";
 import InputSearch from "./InputSearch";
+import { opensidebar } from "../features/sidebar/sidebar";
 
 //interface
 
@@ -19,8 +19,8 @@ interface Props {
 
 //component
 const MenuDesktop: React.FC<Props> = ({ isScrolled }) => {
-  const dispatch: Dispatch<any> = useDispatch();
-  const user = useSelector((state: StateTypeAuth) => state?.auth?.userInfo);
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state: StateTypeAuth) => state?.auth?.userInfo);
   const navigate = useNavigate();
   const hanlerLogout = async () => {
     try {
@@ -39,11 +39,11 @@ const MenuDesktop: React.FC<Props> = ({ isScrolled }) => {
             className="cursor-pointer object-contain headerLink py-1 px-2 inline-block"
           >
             <h2
-              className={`text-2xl font-semibold ${
+              className={`text-sm sm:text-2lg md:text-2xl font-semibold ${
                 isScrolled ? "text-blue-700" : "text-blue-700"
               }`}
             >
-              نماوا
+              نت فیلم
             </h2>
           </Link>
         </div>
@@ -113,7 +113,7 @@ const MenuDesktop: React.FC<Props> = ({ isScrolled }) => {
           <HiMenuAlt3
             size={26}
             className="cursor-pointer"
-            onClick={() => dispatch(actionopensidebar())}
+            onClick={() => dispatch(opensidebar())}
           />
         </div>
       </div>

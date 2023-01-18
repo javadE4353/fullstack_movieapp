@@ -4,13 +4,15 @@ export interface Genre {
 }
 //
 
-interface categories {
-  bits: number;
-  content: string;
-  id: number;
-  title: string;
-  createdAt: string | null;
-  updatedAt: string | null;
+interface Categories {
+  bits: number
+  content: string
+  id: number
+  title: string
+  image:staring
+  username?:string
+  createdAt: string 
+  updatedAt: string 
 }
 
 //
@@ -35,7 +37,7 @@ export interface Movies {
   userid?: number;
   roleuser?: string;
   createdAt?: string;
-  categories?: categories[];
+  categories?: Categories[];
   categoryTitle?: string;
 }
 //
@@ -53,7 +55,7 @@ export interface CommentType {
   username: string;
   movietitle: string;
   content: string;
-  createdAt?: string;
+  updatedAt?: string;
   ratings: number;
   createdAt?: string;
 }
@@ -108,11 +110,11 @@ export interface Payment {
 
 export interface StateTypeAuth {
   auth: {
-    accessToken: string | null;
+    accessToken: string ;
     userInfo: Userinfo | null;
     isLoading: boolean;
     message:string
-    errorMessage: null | string;
+    errorMessage: string;
   };
 }
 
@@ -125,6 +127,7 @@ export interface StateAccessToken {
   };
 }
 //
+
 export interface Element {
   type:
     | "Bloopers"

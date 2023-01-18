@@ -8,24 +8,23 @@ import { HiOutlineHome } from "react-icons/hi";
 import { HiOutlineUser } from "react-icons/hi";
 import { HiOutlineLogin } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
-import { Dispatch } from "redux";
 
 //
-import { actionLogout } from "../redux/actionCreator/actionCreateAuth";
-import { useDispatch } from "react-redux";
 import { axiospublic } from "../axios/configApi";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
+import { logout } from "../features/auth/auth";
 
 //component
 export default function NavigationBottom() {
-  const dispatch: Dispatch<any> = useDispatch();
+  const dispatch= useAppDispatch();
   const [value, setValue] = React.useState(0);
   const navigate = useNavigate();
 
   const hanlerLogout = async () => {
     try {
       await axiospublic.get("/auth/logout");
-      dispatch(actionLogout());
       navigate("/");
+      dispatch(logout())
     } catch (error) {}
   };
   return (

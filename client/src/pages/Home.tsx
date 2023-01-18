@@ -1,12 +1,11 @@
 import { useEffect, useState, CSSProperties } from "react";
 
 //module external
-import { useDispatch, useSelector } from "react-redux";
-import { Dispatch } from "redux";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
 import MuiModal from "@mui/material/Modal";
 import { motion } from "framer-motion";
 import { BsX } from "react-icons/bs";
-import { Movies, StateTypeAuth } from "../typeing";
+import { Categories, Movies, StateTypeAuth } from "../typeing";
 import { Outlet, useLocation } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 
@@ -16,8 +15,8 @@ import Row from "../components/Row";
 import Sidebar from "../components/Saidebar";
 import SliderHome from "../components/slider";
 import useAxiosPrivate from "../hook/useAxiosPrivate";
-import { getAllmylist } from "../redux/actionCreator/actionCreateMylist";
 import NavigationBottom from "../subcomponents/NavigationBottom";
+import { fatchmylist } from "../features/mylist/mylist";
 
 // interface
 const override: CSSProperties = {
@@ -36,11 +35,18 @@ interface togglesidebar {
 
 interface MoviesType {
   movies: {
-    Allmovie: Movies[];
+    movies: Movies[] ;
+    Allmovie: Movies[] ;
+    isLoading: boolean;
+    ErrorMessage: string;
   };
 }
 interface Mylist {
-  mylist: { mylist: Movies[]; isloading: boolean };
+  mylist: {
+    mylist: Movies[];
+    isLoading: boolean;
+    ErrorMessage: string;
+  };
 }
 
 interface Cat {
@@ -52,62 +58,80 @@ interface Cat {
 
 interface Categorys {
   categorys: {
-    categorys: Cat[];
-    categoryPublic: Cat[];
-    update: number;
-    delete: number;
-    insert: number;
-    isloading: boolean;
-    ErrorMassege: string | null;
+    categorys: Categories[];
+    categoryPublic: Categories[] ;
+    isLoading: boolean;
+    ErrorMassege: string;
   };
 }
 
 const Home: React.FC = () => {
   let [color, setColor] = useState("#ffffff");
   const [showalret, setShowAlert] = useState(true);
-  const [cat, setCat] = useState<Cat[]>([]);
+  const [cat, setCat] = useState<Categories[]>([]);
   const [banner, setBanner] = useState<Movies>();
 
   //
-  const mylist = useSelector((state: Mylist) => state?.mylist);
-  const user = useSelector((state: StateTypeAuth) => state?.auth);
-  const toggle = useSelector((state: togglesidebar) => state?.sidebar?.toggle);
-  const categorys = useSelector((state: Categorys) => state?.categorys?.categoryPublic);
-//
-  const dispatch: Dispatch<any> = useDispatch();
-  const movies = useSelector((state: MoviesType) => state?.movies.Allmovie);
+  const mylist = useAppSelector((state: Mylist) => state?.mylist);
+  const user = useAppSelector((state: StateTypeAuth) => state.auth);
+  const toggle = useAppSelector(
+    (state: togglesidebar) => state?.sidebar?.toggle
+  );
+  const categorys = useAppSelector(
+    (state: Categorys) => state.categorys.categoryPublic
+    );
+    const movies = useAppSelector((state: MoviesType) => state.movies.Allmovie);
+  //
+  const dispatch = useAppDispatch();
   const axiosPrivate = useAxiosPrivate();
   const location = useLocation();
 
   //useEffect
   useEffect(() => {
     if (user?.accessToken && user?.userInfo?.id) {
-      // dispatch(getAllmylist(axiosPrivate, user?.userInfo?.id, {}));
+      dispatch(fatchmylist({ axiosPrivate, userid: user.userInfo.id }));
     }
-  }, [location?.pathname]);
-  //
+  }, [location.pathname]);
+
   useEffect(() => {
+    const storag=localStorage.getItem("allCategorys");
+    if(storag){
+      const categoryStorag=JSON.parse(storag);
+
+      const cat = categoryStorag?.filter((item:Categories) => {
+        if (item.bits !== 1 && item.bits !== 100) {
+          return item;
+        }
+      });
+      if (cat) setCat(cat); 
+      return;   
+  } else if(categorys){
     const cat = categorys?.filter((item) => {
       if (item.bits !== 1 && item.bits !== 100) {
         return item;
       }
     });
-    if (cat?.length > 0) setCat(cat);
-  }, [categorys,location.pathname]);
-//
+    if (cat) setCat(cat);
+  }
+
+  }, [categorys, location.pathname]);
+  //
   useEffect(() => {
-    if (movies) {
+    const storag=localStorage.getItem("Allmovie");
+    if(storag){
+      const movieStorag=JSON.parse(storag);
+      setBanner(movieStorag?.[Math.floor(Math.random() * movieStorag.length)]);
+      return;
+    }
+    else if (movies) {
       setBanner(movies?.[Math.floor(Math.random() * movies.length)]);
     }
-  }, [movies,location.pathname]);
-  console.log(categorys)
-  console.log(cat)
-  console.log(movies)
+  }, [movies, location.pathname]);
   //return
   return (
     <>
-      {cat?.length>0 ? (
-        <div className="relative h-auto bg-gradient-to-b from-gray-900/10 to-[#010511] lg:h-auto overflow-hidden">
+      {cat?.length > 0 ? (
+        <div className="relative h-auto bg-gradient-to-b from-[#141414] to-[#141414] lg:h-auto overflow-hidden">
           <Header />
           <div
             className={`fixed top-0 z-[999] bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative ${
@@ -126,12 +150,9 @@ const Home: React.FC = () => {
               <BsX className="text-red-400" />
             </span>
           </div>
-          <main className="relative pl-4 lg:pl-16">
+          <main className="relative">
             <>
-              <div className={`${toggle ? "block" : "hidden"}`}>
-                {user?.userInfo && <Sidebar role={user.userInfo.role} />}
-              </div>
-              {banner && (
+            {banner && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -140,7 +161,10 @@ const Home: React.FC = () => {
                   <SliderHome banner={banner} />
                 </motion.div>
               )}
-              <section className="md:space-y-24">
+              <div className={`${toggle ? "block" : "hidden"}`}>
+                <Sidebar role={user?.userInfo?.role || "user"} />
+              </div>
+              <section className="md:space-y-24 mt-[20%] sm:mt-[25%] md:mt-[25%] lg:mt-[25%] xl:mt-[30%]">
                 {cat?.length > 0
                   ? cat?.map((item, i) => (
                       <Row
@@ -172,26 +196,25 @@ const Home: React.FC = () => {
             </>
           </main>
           {user?.accessToken && <Outlet />}
-          <NavigationBottom />
         </div>
-      )
-      :
-      <>
-     <MuiModal
-        open={true}
-        className="fixed !top-7 left-0 right-0 z-50 mx-auto w-full max-w-5xl overflow-hidden overflow-y-scroll rounded-md scrollbar-hide"
-      >
-      <ClipLoader
-          color={color}
-          loading={true}
-          cssOverride={override}
-          size={50}
-          aria-label="Loading Spinner"
-          data-testid="loader"
-        />
-     </MuiModal>
-      </>
-      }
+      ) : (
+        <>
+          <MuiModal
+            open={true}
+            className="fixed !top-7 left-0 right-0 z-50 mx-auto w-full max-w-5xl overflow-hidden overflow-y-scroll rounded-md scrollbar-hide"
+          >
+            <ClipLoader
+              color={color}
+              loading={true}
+              cssOverride={override}
+              size={50}
+              aria-label="Loading Spinner"
+              data-testid="loader"
+            />
+          </MuiModal>
+        </>
+      )}
+     <NavigationBottom />
     </>
   );
 };

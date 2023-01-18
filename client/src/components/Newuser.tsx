@@ -4,8 +4,6 @@ import { useState, CSSProperties, useCallback, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import ClipLoader from "react-spinners/ClipLoader";
 import { motion } from "framer-motion";
-import { useDispatch, useSelector } from "react-redux";
-import { Dispatch } from "redux";
 import MuiModal from "@mui/material/Modal";
 import { HiOutlineXMark } from "react-icons/hi2";
 import { useRecoilState } from "recoil";
@@ -24,6 +22,8 @@ import {
 } from "../redux/actionCreator/actionCreateUsers";
 import { Users, Userinfo } from "../typeing";
 import { modalCreateUser, modalEditUser } from "../atoms/modalAtom";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
+import { fatchInsertUsers, fatchUsers } from "../features/users/users";
 
 // interface and stylecss
 const override: CSSProperties = {
@@ -43,10 +43,12 @@ const overrideupdate: CSSProperties = {
 };
 interface State {
   users: {
-    user: Users | null;
-    count: number;
+    users: Users[] ;
     insert: number;
-    isloading: boolean;
+    count: number;
+    delete: number;
+    update: number;
+    isLoading: boolean;
     ErrorMessage: string | null;
   };
 }
@@ -68,8 +70,8 @@ const NewUser = () => {
   const [showModalCreateUser, setShowModalCreateUser] =
     useRecoilState(modalCreateUser);
 
-  const dispatch: Dispatch<any> = useDispatch();
-  const stateUsers = useSelector((state: State) => state?.users);
+  const dispatch = useAppDispatch();
+  const stateUsers = useAppSelector((state: State) => state?.users);
   const [Errormsg, setErrormsg] = useState<string>("");
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
@@ -79,6 +81,7 @@ const NewUser = () => {
     watch,
     formState: { errors },
   } = useForm<Inputs>();
+
   const handleClose = () => {
     setModal(false);
     navigate("/dashboard/users")
@@ -93,31 +96,35 @@ const NewUser = () => {
     formData.append("email", data.email);
     formData.append("profile", data.profile);
     formData.append("roleuser", data.roleuser);
-    dispatch(insertUser(axiosPrivate, formData));
+    dispatch(fatchInsertUsers({axiosPrivate,data:formData}));
   };
 
   const handleInsert = useCallback(() => {
-    if (stateUsers?.insert === 1) {
-      dispatch(getUsers(axiosPrivate, { page: 1, pageSize: 3 }));
-      setShowModalCreateUser(false);
+    if (stateUsers?.insert === 201) {
+      // dispatch(fatchUsers({axiosPrivate, page: 1, pageSize: 3 }));
+      // setShowModalCreateUser(false);
+      window.history.back()
     }
   }, [stateUsers?.insert]);
 
+  //useEffect
   useEffect(() => {
     handleInsert();
   }, [stateUsers?.insert]);
+
+  //
   useEffect(() => {
     setModal(true);
   }, []);
   return (
     <>
       <MuiModal
-        open={stateUsers?.isloading}
+        open={stateUsers?.isLoading}
         className="fixed !top-7 left-0 right-0 z-50 mx-auto w-full max-w-5xl overflow-hidden overflow-y-scroll rounded-md scrollbar-hide"
       >
         <ClipLoader
           color={color}
-          loading={stateUsers?.isloading}
+          loading={stateUsers?.isLoading}
           cssOverride={override}
           size={50}
           aria-label="Loading Spinner"

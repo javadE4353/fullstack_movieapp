@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 
 //module external
-import { useSelector } from "react-redux";
 import { HiMenuAlt3 } from "react-icons/hi";
 import { HiOutlineUserCircle } from "react-icons/hi2";
 import { Link } from "react-router-dom";
@@ -12,6 +11,7 @@ import { IconType } from "react-icons/lib";
 import { useRecoilState } from "recoil";
 import { modalSidebarAdmin } from "../atoms/modalAtom";
 import { menusAdmin, menusUser } from "../data/dataSidebarDashboard";
+import { useAppSelector, useAppDispatch } from "../app/hooks";
 
 //interface
 
@@ -23,7 +23,7 @@ interface Menus {
 }
 
 const SidebarDashboard = () => {
-  const user = useSelector((state: StateTypeAuth) => state?.auth);
+  const user = useAppSelector((state: StateTypeAuth) => state?.auth);
   const [open, setOpen] = useState(true);
   const [menus, setMenus] = useState<Menus[]>([]);
   const [Sidebar, setSidebar] = useRecoilState(modalSidebarAdmin);

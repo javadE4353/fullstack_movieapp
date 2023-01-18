@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 
 //module external
-import { useDispatch, useSelector } from "react-redux";
 import { Dispatch } from "redux";
 import { HiMenuAlt3 } from "react-icons/hi";
 import { BsX,BsDoorClosed } from "react-icons/bs";
@@ -12,11 +11,13 @@ import {
 } from "react-icons/hi2";
 
 //
-import { actionclosesidebar } from "../redux/actionCreator/actionCreateSidebar";
+import { useAppSelector,useAppDispatch } from "../app/hooks";
 import { axiospublic } from "../axios/configApi";
 import { actionLogout } from "../redux/actionCreator/actionCreateAuth";
 import { StateTypeAuth } from "../typeing";
 import { menuAdmin, Menus, menuUser } from "../data/dataSaidebarHome";
+import { closesidebar } from "../features/sidebar/sidebar";
+import { logout } from "../features/auth/auth";
 
 
 interface Props{
@@ -25,15 +26,15 @@ interface Props{
 
 const Sidebar = ({role}:Props) => {
   const [menus, setMenus] = useState<Menus[]>([]);
-  const user = useSelector((state: StateTypeAuth) => state?.auth);
-  const dispatch: Dispatch<any> = useDispatch();
+  const user = useAppSelector((state: StateTypeAuth) => state?.auth);
+  const dispatch= useAppDispatch();
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(true);
   const hanlerLogout = async () => {
     try {
       await axiospublic.get("/auth/logout");
-      dispatch(actionLogout());
+      dispatch(logout())
       navigate("/");
     } catch (error) {}
   };
@@ -41,7 +42,6 @@ const Sidebar = ({role}:Props) => {
   useEffect(() => {
     role === "admin" ? setMenus(menuAdmin) : setMenus(menuUser);
   }, []);
-
   //return
   return (
     <motion.div
@@ -61,7 +61,7 @@ const Sidebar = ({role}:Props) => {
                 <BsX
                   size={26}
                   className="cursor-pointer text-red-400"
-                  onClick={() => dispatch(actionclosesidebar())}
+                  onClick={() => dispatch(closesidebar())}
                 />
               </div>
             ) : null}
