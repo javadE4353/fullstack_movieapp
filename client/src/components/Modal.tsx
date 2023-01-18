@@ -10,10 +10,9 @@ import { BsPlus } from "react-icons/bs";
 import { BsHandThumbsUpFill } from "react-icons/bs";
 import MuiModal from "@mui/material/Modal";
 import toast, { Toaster } from "react-hot-toast";
-import { Dispatch } from "redux";
-import { useSelector, useDispatch } from "react-redux";
 import ClipLoader from "react-spinners/ClipLoader";
-
+import {LazyLoadImage} from "react-lazy-load-image-component"
+import 'react-lazy-load-image-component/src/effects/blur.css';
 //
 import {
   Element,
@@ -26,20 +25,10 @@ import {
 } from "../typeing";
 
 import { modalMylist, modalState, movieState } from "../atoms/modalAtom";
-import {
-  insertmylist,
-  getAllmylist,
-  removeMovieMylist,
-} from "../redux/actionCreator/actionCreateMylist";
 import { BsX } from "react-icons/bs";
 import useAxiosPrivate from "../hook/useAxiosPrivate";
 import Comments from "../subcomponents/Comments";
 import { getComments } from "../redux/actionCreator/actionCreateComment";
-import {
-  getRatings,
-  insertRatings,
-} from "../redux/actionCreator/actionCreateRatings";
-import getmovies, { updatemovie } from "../redux/actionCreator/actionMovie";
 import axios from "axios";
 import { BASE_URL } from "../axios/configApi";
 import { useAppSelector, useAppDispatch } from "../app/hooks";
@@ -340,7 +329,7 @@ function Modal() {
       const m = allMovies?.filter((item) => item.id === Number(id));
       if (m.length > 0 && m) setMovie(m[0]);
     }
-  }, [id]);
+  }, [id,allMovies]);
   return (
     <>
       <MuiModal
@@ -365,13 +354,14 @@ function Modal() {
         <>
           <Toaster position="bottom-center" />
           <button
-            className="modalButton absolute right-5 top-5 !z-40 h-9 w-9 border-none bg-[#181818] hover:bg-[#181818]"
+            className="btn z-50 absolute right-4 top-3 text-[7px] md:text-xs h-5 w-5 md:h-9 md:w-9 rounded-[100%] p-0"
             onClick={handleClose}
           >
-            <BsX className="h-6 w-6" />
+            <BsX className="h-6 w-6 text-white relative z-50" />
+            خروج
           </button>
 
-          <div className="relative pt-[56.25%]">
+          <div className="relative pt-[56.25%] overflow-hidden">
             <>
               {play ? (
                 <>
@@ -396,19 +386,30 @@ function Modal() {
                 </>
               ) : (
                 <div
-                  className="w-full bg-cover bg-no-repeat bg-center absolute inset-y-0 h-full"
+                  className=" flex justify-between  w-full bg-cover bg-no-repeat absolute inset-y-0 h-full"
                   style={{
                     backgroundImage: `url(${movie?.poster_path})`,
                   }}
                 >
-                  <div className="w-[40%] absolute  h-full rounded py-4 px-4">
+                  <div className=" relative z-40 flex-1 w-32 rounded-3xl py-4 px-4">
                     <div
-                      className="w-full bg-contain bg-no-repeat bg-center h-full rounded py-4 px-4"
-                      style={{
-                        backgroundImage: `url(${movie?.poster_path})`,
-                      }}
-                    ></div>
+                      className="w-full h-full rounded-3xl overflow-hidden py-4 px-4 my-2"
+                    >
+                    <LazyLoadImage
+                              src={`${movie?.poster_path}`}
+                              className="img-lazy rounded-2xl h-auto max-w-full"
+                              placeholderSrc={`${movie?.title}`}
+                              effect="blur"
+                       />
+                    </div>
                   </div>
+                  <div className="relative z-30 flex flex-col items-center justify-center flex-auto w-40 overflow-hidden">
+                    <h3 className="font-bold text-sm md:text-lg lg:text-lg mb-4 text-white">{movie?.title}</h3>
+                    <p className="text-sm md:text-lg lg:text-lg">
+                      {movie?.overview}
+                    </p>
+                  </div>
+                  <div className="z-20 absolute top-0 bottom-0 right-0 left-0 h-full w-full bg-black opacity-70"></div>
                 </div>
               )}
             </>
@@ -423,13 +424,13 @@ function Modal() {
                 <div className="flex justify-around space-x-2 p-4 border border-white border-solid rounded-md justify-center w-auto lg:w-[30%] md:w-[50%]">
                   <button
                     onClick={() => setPlay(!play)}
-                    className="flex border border-blue-400 items-center gap-x-2 rounded pl-8 text-xl font-bold text-white transition hover:bg-[#e6e6e6]"
+                    className="btn btn-sm gap-x-2 ml-4 p-0 px-4 text-xl transition hover:bg-[#e6e6e6] "
                   >
-                    <FaPlay className="h-7 w-7 text-black" />
-                    {play ? "خروج" : "نمایش"}
+                    <FaPlay className="h-7 w-7 text-white" />
+                    {play ? "خروج" : "تماشا"}
                   </button>
                   <button
-                    className="mr-4 modalButton"
+                    className="mr-4 modalButton "
                     onClick={() => handleList()}
                   >
                     {addedToList ? (

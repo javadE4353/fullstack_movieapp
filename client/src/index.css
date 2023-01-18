@@ -66,6 +66,50 @@
     @apply cursor-pointer px-2 ml-1 text-sm font-semibold font-light text-[#e5e5e5] transition duration-[.4s]
   hover:text-[#6eb8ff];
   }
+  .btn {
+    border: 4px solid transparent;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background-color: #ff0000;
+    color: #fff;
+    border-radius: 30px;
+    padding: 0.5rem 1.8rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    box-shadow: 0px 0px 7px 8px #ff00004d;
+    transition: box-shadow 0.3s ease;
+    position: relative;
+}
+.btn:hover {
+  box-shadow: 0px 0px 7px 15px #ff00004d;
+}
+
+.btn-outline {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  border: 3px solid #fff;;
+  border-radius: 30px;
+  padding: 0.5rem 1.8rem;
+  background-color: transparent;
+  color: #fff;;
+  box-shadow: unset;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.btn-outline:hover {
+  box-shadow: unset;
+  color: #ff0000;
+  background-color: #fff;;
+}
+.btn.small {
+  border-width: 2px;
+  padding: 0 1rem;
+  font-size: 0.5rem;
+}
+
+
 
   .input {
     @apply w-full rounded bg-[#333333] px-5 py-3.5 placeholder-[gray] outline-none focus:bg-[#454545];

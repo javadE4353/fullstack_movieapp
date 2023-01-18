@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import {LazyLoadImage} from "react-lazy-load-image-component"
 import 'react-lazy-load-image-component/src/effects/blur.css';
+import { FaPlay } from "react-icons/fa";
+
 //
 import { showAlert } from "../atoms/modalAtom";
 import { Movies, StateTypeAuth, Userinfo } from "../typeing";
@@ -41,16 +43,17 @@ function Thumbnail({ movie,category }: Props) {
   return (
     <>
       <div
-        className={`relative cursor-pointer transition duration-200 ease-out md:hover:scale-105`}
+        className={`relative overflow-hidden cursor-pointer rounded-2xl transition duration-200 ease-out md:hover:scale-101`}
         onClick={() => handleShowMovie()}
       >
-        <div className="transition ease-in-out absolute top-0 left-0 bottom-0 right-0 z-50 flex justify-center items-center opacity-0 -translate-y-100 -z-1  hover:translate-y-0 duration-700 hover:z-40 duration-100 hover:opacity-100 duration-100">
-        <button className=" bg-red-400 py-1 px-8 opacity-100 rounded-lg relative z-40">تماشا</button>
-        <div className="absolute z-30 top-0 left-0 bottom-0 right-0  h-full w-full opacity-60 bg-neutral-700"></div>
+        <div className="transition rounded-2xl h-full w-full ease-in-out absolute top-0 left-0 bottom-0 right-0 z-50 flex justify-center items-center opacity-0 -translate-y-100 -z-1  hover:translate-y-0 duration-700 hover:z-40 duration-100 hover:opacity-100 duration-100">
+        <button className="btn btn-sm relative z-40"><FaPlay/></button>
+        <div className="absolute bottom-0 text-red-600 z-40 font-bold flex justify-center items-center"><h3>{movie?.title}</h3></div>
+        <div className="absolute z-30 top-0 left-0 bottom-0 right-0 rounded-2xl  h-full w-full opacity-80 bg-black"></div>
         </div>
         <LazyLoadImage
           src={`${movie?.poster_path}`}
-          className="img-lazy"
+          className="img-lazy rounded-2xl h-full"
           placeholderSrc={`${movie?.title}`}
           effect="blur"
           />

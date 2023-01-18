@@ -68,7 +68,7 @@ function Row({ title, movies, category }: Props) {
       ) : null}
       <div className="relative md:-ml-2">
       <Swiper
-       spaceBetween={30}
+       spaceBetween={20}
        slidesPerView={2}
        navigation
        loop={false}
@@ -87,7 +87,7 @@ function Row({ title, movies, category }: Props) {
               spaceBetween: 20
             },
             480: {
-              slidesPerView: 3,
+              slidesPerView: 4,
               spaceBetween: 20
             },
             768: {

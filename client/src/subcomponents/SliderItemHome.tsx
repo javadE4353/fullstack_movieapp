@@ -63,18 +63,18 @@ const SliderItemHome = ({ item }: Props) => {
 
           <div className="flex space-x-3 pr-3 my-4">
             <button
-              className="ml-2 bannerButton bg-transparent text-white border border-red-500 rounded-md"
+              className="btn text-sm ml-3"
               onClick={() => handleShowMovie(item?.id ? item?.id : null)}
             >
-              <FaPlay className="h-4 w-4 text-red md:h-7 md:w-7" />
-              نمایش
+              {/* <FaPlay className=""size={25} /> */}
+              تماشا
             </button>
 
             <button
-              className="mr-4 bannerButton bg-[#e1e1e1] border border-[#e1e1e1] rounded-md "
+              className="btn-outline mr-3"
               onClick={() => handleShowMovie(item?.id ? item?.id : null)}
             >
-              <HiOutlineInformationCircle className="h-5 w-5 md:h-8 md:w-8" />
+              {/* <HiOutlineInformationCircle className="h-5 w-5 md:h-8 md:w-8" /> */}
               جزئیات
             </button>
           </div>
