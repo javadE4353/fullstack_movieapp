@@ -6,12 +6,12 @@ import { Movies } from "../typeing";
 import Thumbnail from "./thumbnail";
 import { Link } from "react-router-dom";
 import { moviefake } from "../data/data";
-import { Navigation, Pagination, Scrollbar, A11y } from 'swiper';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import 'swiper/css/scrollbar';
+import { Navigation, Pagination, Scrollbar, A11y } from "swiper";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/scrollbar";
 //interface
 interface Props {
   title: string;
@@ -67,56 +67,49 @@ function Row({ title, movies, category }: Props) {
         </Link>
       ) : null}
       <div className="relative md:-ml-2">
-      <Swiper
-       spaceBetween={20}
-       slidesPerView={2}
-       navigation
-       loop={false}
-       modules={[Navigation, Pagination]}
-
-      //  onSlideChange={() => console.log('slide change')}
-      //  onSwiper={(swiper) => console.log(swiper)}
-       breakpoints={
-          {
+        <Swiper
+          spaceBetween={20}
+          slidesPerView={2}
+          navigation
+          loop={false}
+          modules={[Navigation, Pagination]}
+          //  onSlideChange={() => console.log('slide change')}
+          //  onSwiper={(swiper) => console.log(swiper)}
+          breakpoints={{
             380: {
               slidesPerView: 2,
-              spaceBetween: 20
+              spaceBetween: 20,
             },
             412: {
               slidesPerView: 2,
-              spaceBetween: 20
+              spaceBetween: 20,
             },
             480: {
               slidesPerView: 4,
-              spaceBetween: 20
+              spaceBetween: 20,
             },
             768: {
               slidesPerView: 4,
-              spaceBetween: 20
+              spaceBetween: 20,
             },
             992: {
-              slidesPerView:6,
-              spaceBetween: 20
+              slidesPerView: 6,
+              spaceBetween: 20,
             },
             1200: {
               slidesPerView: 6,
-              spaceBetween: 20
+              spaceBetween: 20,
             },
             1300: {
               slidesPerView: 6,
-              spaceBetween: 20
+              spaceBetween: 20,
             },
-          }
-       }
-    >
+          }}
+        >
           {movies?.map((movie, i) => (
-               <SwiperSlide>
-                     <Thumbnail
-                      key={movie.id}
-                      movie={movie}
-                      category={category}
-                    />
-                </SwiperSlide>
+            <SwiperSlide>
+              <Thumbnail key={movie.id} movie={movie} category={category} />
+            </SwiperSlide>
           ))}
         </Swiper>
       </div>

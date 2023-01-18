@@ -129,10 +129,12 @@ const Home: React.FC = () => {
   }, [movies, location.pathname]);
   //return
   return (
-    <>
+    <div>
       {cat?.length > 0 ? (
         <div className="relative h-auto bg-gradient-to-b from-[#141414] to-[#141414] lg:h-auto overflow-hidden">
+          <div className="absolute top-0 left-0 right-0">
           <Header />
+          </div>
           <div
             className={`fixed top-0 z-[999] bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative ${
               showalret ? "block" : "hidden"
@@ -215,7 +217,7 @@ const Home: React.FC = () => {
         </>
       )}
      <NavigationBottom />
-    </>
+    </div>
   );
 };
 

@@ -18,8 +18,8 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="">
-      <ConfigPages />
+    <div className="container mx-auto">
+        <ConfigPages />
       <ToastContainer
         position="top-center"
         autoClose={5000}
